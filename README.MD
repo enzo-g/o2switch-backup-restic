@@ -3,7 +3,7 @@
 Script Description
 ------------------
 
-This Bash shell script has been written with the goal of backing up your website's data and MySQL databases on the infrastructure provided by [O2Switch](https://www.o2switch.fr/), as well as transferring them to a remote cloud service of your choice.
+This Bash shell script is designed to backup your website's data and MySQL databases from [O2Switch's infrastructure](https://www.o2switch.fr/) to a remote cloud service of your choice.
 
 The script can automatically detect WordPress installations located in directories at the root of your installation and dump their databases for backup. It uses Restic and Rclone to backup your data in a secure manner on a remote location. Restic is a powerful and easy-to-use backup tool that features strong encryption, efficient deduplication, and compression to help you securely backup and restore your data. Rclone is a versatile and reliable command-line tool that allows you to sync and transfer files between multiple cloud storage providers and other types of storage systems.
 
@@ -15,10 +15,7 @@ Disclaimer
 * This script is provided as-is and without any warranty. The author is not responsible for any problems that may arise from the use of this script, including but not limited to data loss, system crashes, or other issues. While this script is intended for backing up data, please note that backups can fail for a variety of reasons, and it is important to backup your data before running the script. Use at your own risk and make sure to backup your data before running the script.
 * If you are uncertain about how to use this script or encounter any issues during its execution, O2Switch offers Jetbackup as a backup solution. For more information on how to use Jetbackup, please visit their [FAQ page](https://faq.o2switch.fr/hebergement-mutualise/tutoriels-cpanel/sauvegarde-jetbackup)
 
-
-
-
-# How-To - Short version
+# How-To: Quick Explanation
 
 That short how-to is for those confortable with Restic and O2Swtich capabilities and restrictions.
 By default, the script will backup all of your files except the one within hidden folder at the root of your webserver.
@@ -36,22 +33,23 @@ $ ./backup.sh --install
 $ ./backup.sh --backup
 ```
 
-# HOW-TO - Long version
+# How-to: Detailed Explanation
 
 Prerequesite
 ---------------------
-
-* Some experiences with Restic or Rclone before using the script would be appropriate.
+* Before you get started with the script, it's a good idea to have some experience with Restic or Rclone. If you're not familiar with these tools, don't worry - I've included some links to documentation that can help you get up to speed. The step-by-step configuration is covering the basic too.
   * Documentation about Restic: (https://restic.readthedocs.io/en/latest/010_introduction.html)
   * Documentation to use Rclone with Restic: (https://restic.readthedocs.io/en/latest/030_preparing_a_new_repo.html?highlight=rclone#other-services-via-rclone)
 
-* Restic can backup without Rclone on multiple cloud services (Rest Server, Amazon S3, Minio, Azure...). But also locally or with SFTP.
-  * If you are planning to use SFTP, you need to declare your remote server IP in Cpanel interface to unlock the traffic.
+* Restic can backup to multiple cloud services, such as Rest Server, Amazon S3, Minio, and Azure, as well as locally or with SFTP.
+  * If you're planning to use SFTP, you'll need to declare your remote server IP in the Cpanel interface to unlock the traffic. We've included a link to the official O2switch documentation that explains how to do this.
     * Official O2switch documentation: (https://faq.o2switch.fr/hebergement-mutualise/tutoriels-cpanel/whitelist-firewall)
-      * Outils > Autorisation SSH, and declare you remote server IP on port 22
-  * OneDrive services seems to be whitelisted by O2switch and can be use by default with Rclone.
+    * Cpanel > Outils > Autorisation SSH, and declare you remote server IP on port 22
+  * Note that OneDrive services are whitelisted by O2switch and can be used by default with Rclone.
 
-* You should have request your shell access for your web-hosting (https://faq.o2switch.fr/hebergement-mutualise/acces-ssh-shell-cli-cmdline)
+* Finally, it's important to have shell access to your web hosting. If you haven't already requested this, I've included a link to the O2switch documentation that explains how to do it. (https://faq.o2switch.fr/hebergement-mutualise/acces-ssh-shell-cli-cmdline)
+
+We hope this helps you prepare for using the script. If you have any questions or run into any issues, don't hesitate to reach out - I'm here to help!
 
 Step by step Installation and configuration
 ---------------------
@@ -70,6 +68,7 @@ Step by step Installation and configuration
   $ rm backup.sh"sftp:user_remoteserver@host_remoteserver.com:/home/user_remoteserver/restic"
   $ # delete the backup.sh file from the root directory
 ```
+
 ### Step 2 - Prepare a remote repository to welcome your files.
 
 #### Example with SFTP
@@ -93,34 +92,36 @@ $ $HOME/scripts/backup/./restic -r "sftp:user_remoteserver@host_remoteserver.com
 $ # As long as user_remote has enougth permissions, the directory will be automatically created: /home/user_remoteserver/restic
 $ # You will be requested to "enter password for new repository:" You will need that password later, don't lose it.
 ```
+
 ### Step 3 - Edit the configuration files
 
 Now let's edit the configuration files.
 
-* backup-restic-conf.txt: Edit that file with the content of the command used to init your restic repository.
+* `backup-restic-conf.txt`: Edit that file with the content of the command used to init your restic repository.
   `"sftp:user_remoteserver@host_remoteserver.com:/home/user_remoteserver/restic"`
   Within that file you can also edit the path of the file that will contain your restic repo password. I don't recommend to edit it.
-* backup-restic-pwd.txt: Insert within that file, the password you have selected.
-* backup-db-others.txt: Edit that file if you want to add specific databases to backup that are not related to a wordpress installation.
+* `backup-restic-pwd.txt`: Insert within that file, the password you have selected.
+* `backup-db-others.txt`: Edit that file if you want to add specific databases to backup that are not related to a wordpress installation.
   You will need to create an user and to grant him the following permission for those DBs only: `SELECT / LOCK TABLES / SHOW VIEW`
   Documentation from O2Switch: Base de données MySQL(https://faq.o2switch.fr/hebergement-mutualise/tutoriels-cpanel/base-donnees-mysql)
-* backup-excluded-dirs.txt: Edit that file to add folders to not backup, check the content some folders are excluded by default.
+* `backup-excluded-dirs.txt`: Edit that file to add folders to not backup, check the content some folders are excluded by default.
   You can use the command  `ls -dA .*/ | grep -Ev '^(\./|\.\./)$'` to obtain the list of all hidden folder at the root of your home directory.
   Most of those directories can be excluded from backup. I recommend you to add them within the file.
 
 ### Step 4 - Set a cron
 
 You want that script to be automatically executed, for that we use crontab. 
-You can do that from cpanel or from command line. (https://faq.o2switch.fr/hebergement-mutualise/tutoriels-cpanel/taches-cron)
+You can do that from [O2switch cpanel](https://faq.o2switch.fr/hebergement-mutualise/tutoriels-cpanel/taches-cron) or from command line. 
 ```shell
 $ EDITOR=nano crontab -e
 $ # Add the following line to launch a backup everyday at midnigh:
 $ 0 0 * * * $HOME/scripts/backup/backup.sh --backup
 $ # Ctrl + o to save your change and Ctrl + x to quit nano
 ```
+
 ### Step 5 - Test our installation / launch our first backup
 
-You are probably impatient at this point to test if the backup is working correctly.
+You are probably impatient at this point to test if your backup is going to work properly.
 You can execute that command to launch your first backup: `$HOME/scripts/backup/backup.sh --backup`
 
 # More details
@@ -134,14 +135,6 @@ The `--backup` option is used to backup the MySQL databases of WordPress install
 
 The `--install` option is used to install the bacup script, downlaod the latest version of Restic and prepare the environment for running the backup.
 If while running "./backup.sh --backup" a file was missing, the --install option can be used to recreate the missing file. 
-
-To use this option, run the script with the following command:
-
-shell
-
-```shell
-$ ./backup.sh --install
-```
 
 Script Configuration
 --------------------
@@ -160,28 +153,30 @@ By default, you should have no need to edit them.
 
 The following files are carrying also important part of the configuration:
 
-* backup-restic-conf.txt: restic command to backup on your selected repository
-* backup-restic-pwd.txt: Password of your restic repository
-* backup-db-others.txt: Other MySQL DB to back-up aside of the automatic backup of wordpress DB
-* backup-excluded-dirs.txt: Edit that file to add folders to not backup, check the content some folders are excluded by default.
+* `backup-restic-conf.txt`: restic command to backup on your selected repository
+* `backup-restic-pwd.txt`: Password of your restic repository
+* `backup-db-others.txt`: Other MySQL DB to back-up aside of the automatic backup of wordpress DB
+* `backup-excluded-dirs.txt`: Edit that file to add folders to not backup, check the content some folders are excluded by default.
   You can use the command  `ls -dA .*/ | grep -Ev '^(\./|\.\./)$'` to obtain the list of all hidden folder at the root of your home directory.
   Most of those directories can be excluded from backup. I recommend you to add them within the file.
 
 # Next steps
 
-I would like to implement the following feature within that script:
-* Add an option to update the script and its components
-* Automaticat edition of cron at the installation
-* Add more safety check within the script
-* Add an option to check the script current installation and fix it in a cleaner way if necessary
-* Provide documentation on how to restore files from the restic backup, even if that documentation can befind on restic official website.
+Looking ahead, I have a few features I'd like to add to the script to make it even more useful. Here are some of the things I'm planning to work on:
 
+* Adding logs: I'll make it easier to track what the script is doing and identify any issues that arise.
+* Updating the script and its components: I'll add an option to update the script and any dependencies, so you always have the latest features and bug fixes.
+* Automatic editing of cron at installation: I'll streamline the installation process by automatically configuring the cron job for you.
+* Adding more safety checks: I'll build in additional checks to ensure that the script is running smoothly and safely.
+* Adding a script check and repair option: I'll include an option to check the current installation and fix any issues in a cleaner way if needed.
+* Providing documentation on how to restore files from the restic backup: I'll create a guide to help you restore your files in case you ever need to recover from a data loss.
+
+I'm excited to work on these features and make the script even better. As always, if you have any feedback or suggestions, I'm happy to hear them!
 
 # Acknowledgments
 
 I would like to thanks [Restic](https://github.com/restic/restic) and [Rclone](https://rclone.org/) for their astonishing softwares.
-I would like to express my gratitude to [Uprising](https://github.com/uprisingweb/o2switch-backup-all.sh). 
-I got the idea of this current script when I was looking for an existing solution and found his script. I find his wordpress database backup solution especially elegant!
+I would like to express my gratitude to [Uprising](https://github.com/uprisingweb/o2switch-backup-all.sh). I got the idea of this current script when I was looking for an existing solution and found his script. I find his wordpress database backup solution especially elegant!
 
 License
 ----------
