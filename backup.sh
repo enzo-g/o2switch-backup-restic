@@ -1,5 +1,8 @@
 #!/bin/bash
 # GitHub source: https://github.com/enzo-g/o2switch-backup-restic
+# Disclaimer: This script is provided as-is and without any warranty. The author is not responsible for any problems that may arise from the use of this script, 
+# including but not limited to data loss, system crashes, or other issues. Use at your own risk and make sure to backup your data before running the script.
+
 
 #Argument you can use with the script
 
