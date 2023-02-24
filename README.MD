@@ -139,19 +139,7 @@ If while running "./backup.sh --backup" a file was missing, the --install option
 Script Configuration
 --------------------
 
-The script can be configured using the following variables.
-By default, you should have no need to edit them.
-
-*   `ROOT_DIR`: Defines the root directory to scan for directory to backup.
-*   `RESTIC_SCRIPT`: Defines the path to the script backup directory.
-*   `DB_BACKUP_DIR`: Defines the directory to store database backups.
-*   `RESTIC_BIN`: Defines the path to the Restic binary.
-*   `RESTIC_CONF`: Defines the path of the Restic configuration file.
-*   `restic_password_file`: Sets the path to the Restic password file.
-*   `OTHER_DBS_FILE`: Defines the file containing other databases to backup and usernames.
-*   `EXCLUDED_DIRS_FILE`: Defines the file containing the directories to exclude.
-
-The following files are carrying also important part of the configuration:
+Once the script is installed, the following files can be edited to control the behavior of the script. 
 
 * `backup-restic-conf.txt`: restic command to backup on your selected repository
 * `backup-restic-pwd.txt`: Password of your restic repository
@@ -160,11 +148,19 @@ The following files are carrying also important part of the configuration:
   You can use the command  `ls -dA .*/ | grep -Ev '^(\./|\.\./)$'` to obtain the list of all hidden folder at the root of your home directory.
   Most of those directories can be excluded from backup. I recommend you to add them within the file.
 
+The following variables within the script `backup.sh` can be edited to change the script behavior. But I recommend keeping the default value.
+
+*   `DIR_ROOT`: This variable specifies the root directory that the script will scan to find directories that need to be backed up.
+*   `DIR_DB_BACKUP`: The directory where the databases dump will be stored can be changed by modifying this variable.
+*   `DIR_WP`: Defines the directory that the script scant to find your wordpress installations
+*   `LOG_FILE`: The name format of the log files can be customized by editing this variable.
+*   `LOG_DAYS_TO_KEEP`: The amount of time that log files will be retained can be specified by changing this variable.
+*   `DUMP_DAYS`: The length of time that a dump file will be retained in the `DIR_DB_BACKUP` folder can be set by modifying this variable.
+
 # Next steps
 
-Looking ahead, I have a few features I'd like to add to the script to make it even more useful. Here are some of the things I'm planning to work on:
+Looking ahead, I have a few features I'd like to add to the script to make it even more useful. Here are some things I'm planning to work on:
 
-* Adding logs: I'll make it easier to track what the script is doing and identify any issues that arise.
 * Adding support for PostgreSQL: I think it would be interesting to have that feature too.
 * Updating the script and its components: I'll add an option to update the script and any dependencies, so you always have the latest features and bug fixes.
 * Automatic editing of cron at installation: I'll streamline the installation process by automatically configuring the cron job for you.
