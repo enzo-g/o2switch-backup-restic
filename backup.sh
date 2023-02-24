@@ -28,7 +28,6 @@ DIR_DB_BACKUP="$DIR_ROOT/backup-db"
 DIR_SCRIPTS="$DIR_ROOT/scripts"
 # Define the path to the script backup directory
 DIR_SCRIPT_BACKUP="$DIR_SCRIPTS/backup"
-
 # Define the directory to store logs
 DIR_SCRIPT_LOGS="$DIR_SCRIPT_BACKUP/logs"
 # Define the path to the Rclone binary
@@ -282,7 +281,7 @@ function dump_wordpress_databases() {
         DUMP_FILE="${DATABASE}_${DATE}_${TIMESTAMP}.sql"
         if mysqldump --user="$DB_USER" --password="$DB_PASSWORD" --databases "$DATABASE" > "$BACKUP_DIR/$DUMP_FILE"; then
           gzip "$BACKUP_DIR/$DUMP_FILE"
-          echo "[✓] Dump succeed for $INSTALLATION_DIR"
+          echo "[✓] Dump succeed for: $INSTALLATION_DIR"
         else
           echo "[X] Dump failed for: $INSTALLATION_DIR"
         fi
