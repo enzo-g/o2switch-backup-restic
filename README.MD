@@ -5,6 +5,8 @@ Script Description
 
 This Bash shell script is designed to backup your website's data and MySQL databases from [O2Switch's infrastructure](https://www.o2switch.fr/) to a remote cloud service of your choice.
 
+If you're hosting only WordPress websites on O2Switch, you may only need to edit `backup-restic-conf.txt` and `backup-restic-pwd.txt`, as the default behavior of the script will be sufficient to backup all of your WordPress installations.
+
 The script can automatically detect WordPress installations located in directories at the root of your installation and dump their databases for backup. It uses Restic and Rclone to backup your data in a secure manner on a remote location. Restic is a powerful and easy-to-use backup tool that features strong encryption, efficient deduplication, and compression to help you securely backup and restore your data. Rclone is a versatile and reliable command-line tool that allows you to sync and transfer files between multiple cloud storage providers and other types of storage systems.
 
 The decision to use this script to backup your data with O2Switch's infrastructure is based on their recommendation for users to maintain their own backups in addition to their [Jetbackup](https://faq.o2switch.fr/hebergement-mutualise/tutoriels-cpanel/sauvegarde-jetbackup) solution for restoring backups. This script is designed to follow their recommendation and provide you with a secure and efficient backup solution.
@@ -139,14 +141,15 @@ If while running "./backup.sh --backup" a file was missing, the --install option
 Script Configuration
 --------------------
 
-Once the script is installed, the following files can be edited to control the behavior of the script. 
+Before diving into customizing the script behavior, it's worth noting that if you're only hosting WordPress websites on O2switch, you'll only need to edit `backup-restic-conf.txt` and `backup-restic-pwd.txt`. The default behavior of the script should be sufficient for backing up all of your WordPress installations.
 
-* `backup-restic-conf.txt`: restic command to backup on your selected repository
-* `backup-restic-pwd.txt`: Password of your restic repository
-* `backup-db-others.txt`: Other MySQL DB to back-up aside of the automatic backup of wordpress DB
-* `backup-excluded-dirs.txt`: Edit that file to add folders to not backup, check the content some folders are excluded by default.
-  You can use the command  `ls -dA .*/ | grep -Ev '^(\./|\.\./)$'` to obtain the list of all hidden folder at the root of your home directory.
-  Most of those directories can be excluded from backup. I recommend you to add them within the file.
+That being said, if you do need to customize the script, you can modify the following files:
+
+* `backup-restic-conf.txt`: This file contains the restic command that is used to backup your selected repository.
+* `backup-restic-pwd.txt`: Here you have to enter the password for your restic repository.
+* `backup-db-others.txt`: In case you need to backup other MySQL databases besides the automatic backup of the WordPress database, you can add them to this file.
+* `backup-excluded-dirs.txt`: If you want to exclude certain folders from the backup, you can add them to this file. 
+   Some folders are already excluded by default. You can use at the root of your home directory, the command: `ls -dA .*/ | grep -Ev '^(\./|\.\./)$'` to obtain a list of all hidden folders at the root of your home directory. Most of these directories can be excluded from backup, and I recommend adding them to this file.
 
 The following variables within the script `backup.sh` can be edited to change the script behavior. But I recommend keeping the default value.
 
