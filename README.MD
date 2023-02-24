@@ -49,7 +49,7 @@ Prerequesite
 
 * Finally, it's important to have shell access to your web hosting. If you haven't already requested this, I've included a link to the O2switch documentation that explains how to do it. (https://faq.o2switch.fr/hebergement-mutualise/acces-ssh-shell-cli-cmdline)
 
-We hope this helps you prepare for using the script. If you have any questions or run into any issues, don't hesitate to reach out - I'm here to help!
+I hope this helps you prepare for using the script. If you have any questions or run into any issues, don't hesitate to reach out - I'm here to help!
 
 Step by step Installation and configuration
 ---------------------
@@ -103,7 +103,7 @@ Now let's edit the configuration files.
 * `backup-restic-pwd.txt`: Insert within that file, the password you have selected.
 * `backup-db-others.txt`: Edit that file if you want to add specific databases to backup that are not related to a wordpress installation.
   You will need to create an user and to grant him the following permission for those DBs only: `SELECT / LOCK TABLES / SHOW VIEW`
-  Documentation from O2Switch: Base de données MySQL(https://faq.o2switch.fr/hebergement-mutualise/tutoriels-cpanel/base-donnees-mysql)
+  Documentation from O2Switch: [Base de données MySQL](https://faq.o2switch.fr/hebergement-mutualise/tutoriels-cpanel/base-donnees-mysql)
 * `backup-excluded-dirs.txt`: Edit that file to add folders to not backup, check the content some folders are excluded by default.
   You can use the command  `ls -dA .*/ | grep -Ev '^(\./|\.\./)$'` to obtain the list of all hidden folder at the root of your home directory.
   Most of those directories can be excluded from backup. I recommend you to add them within the file.
