@@ -1,7 +1,6 @@
 # O2Switch Backup with Restic
 
-Script Description
-------------------
+## Script Description<a name="script-description"></a>
 
 This Bash shell script is designed to backup your website's data and MySQL databases from [O2Switch's infrastructure](https://www.o2switch.fr/) to a remote cloud service of your choice.
 
@@ -11,13 +10,29 @@ The script can automatically detect WordPress installations located in directori
 
 The decision to use this script to backup your data with O2Switch's infrastructure is based on their recommendation for users to maintain their own backups in addition to their [Jetbackup](https://faq.o2switch.fr/hebergement-mutualise/tutoriels-cpanel/sauvegarde-jetbackup) solution for restoring backups. This script is designed to follow their recommendation and provide you with a secure and efficient backup solution.
 
-Disclaimer
+# Table of Contents
+
+- [Script Description](#script-description)
+- [Disclaimer](#disclaimer)
+- [How-To: Quick Explanation](#how-to-quick-explanation)
+- [How-to: Detailed Explanation](#how-to-detailed-explanation)
+  - [Prerequisite](#prerequisite)
+  - [Step by step Installation and configuration](#step-by-step-installation-and-configuration)
+- [More details](#more-details)
+  - [Script arguments](#script-arguments)
+  - [Script Configuration](#script-configuration)
+- [Next Steps](#next-steps)
+- [Acknowledgments](#acknowledgments)
+- [License](#license)
+
+
+Disclaimer<a name="disclaimer"></a>
 ------------------
 * I'm not affiliated with [O2Switch](https://www.o2switch.fr/)
 * This script is provided as-is and without any warranty. The author is not responsible for any problems that may arise from the use of this script, including but not limited to data loss, system crashes, or other issues. While this script is intended for backing up data, please note that backups can fail for a variety of reasons, and it is important to backup your data before running the script. Use at your own risk and make sure to backup your data before running the script.
 * If you are uncertain about how to use this script or encounter any issues during its execution, O2Switch offers Jetbackup as a backup solution. For more information on how to use Jetbackup, please visit their [FAQ page](https://faq.o2switch.fr/hebergement-mutualise/tutoriels-cpanel/sauvegarde-jetbackup)
 
-# How-To: Quick Explanation
+# How-To: Quick Explanation<a name="how-to-quick-explanation"></a>
 
 That short how-to is for those confortable with Restic and O2Swtich capabilities and restrictions.
 By default, the script will backup all of your files except the one within hidden folder at the root of your webserver.
@@ -35,9 +50,9 @@ $ ./backup.sh --install
 $ ./backup.sh --backup
 ```
 
-# How-to: Detailed Explanation
+# How-to: Detailed Explanation<a name="how-to-detailed-explanation"></a>
 
-Prerequesite
+Prerequesite<a name="prerequisite"></a>
 ---------------------
 * Before you get started with the script, it's a good idea to have some experience with Restic or Rclone. If you're not familiar with these tools, don't worry - I've included some links to documentation that can help you get up to speed. The step-by-step configuration is covering the basic too.
   * Documentation about Restic: (https://restic.readthedocs.io/en/latest/010_introduction.html)
@@ -53,7 +68,7 @@ Prerequesite
 
 I hope this helps you prepare for using the script. If you have any questions or run into any issues, don't hesitate to reach out - I'm here to help!
 
-Step by step Installation and configuration
+Step by step Installation and configuration<a name="step-by-step-installation-and-configuration"></a>
 ---------------------
 
 ### Step 1 - Upload the script and install it.
@@ -126,9 +141,9 @@ $ # Ctrl + o to save your change and Ctrl + x to quit nano
 You are probably impatient at this point to test if your backup is going to work properly.
 You can execute that command to launch your first backup: `$HOME/scripts/backup/backup.sh --backup`
 
-# More details
+# More details<a name="more-details"></a>
 
-Script arguments
+Script arguments<a name="script-arguments"></a>
 ---------------------
 
 The script can be used with two options: `--backup` and `--install`.
@@ -138,7 +153,7 @@ The `--backup` option is used to backup the MySQL databases of WordPress install
 The `--install` option is used to install the bacup script, downlaod the latest version of Restic and prepare the environment for running the backup.
 If while running "./backup.sh --backup" a file was missing, the --install option can be used to recreate the missing file. 
 
-Script Configuration
+Script Configuration<a name="script-configuration"></a>
 --------------------
 
 Before diving into customizing the script behavior, it's worth noting that if you're only hosting WordPress websites on O2switch, you'll only need to edit `backup-restic-conf.txt` and `backup-restic-pwd.txt`. The default behavior of the script should be sufficient for backing up all of your WordPress installations.
@@ -160,7 +175,7 @@ The following variables within the script `backup.sh` can be edited to change th
 *   `LOG_DAYS_TO_KEEP`: The amount of time that log files will be retained can be specified by changing this variable.
 *   `DUMP_DAYS`: The length of time that a dump file will be retained in the `DIR_DB_BACKUP` folder can be set by modifying this variable.
 
-# Next steps
+# Next steps<a name="next-steps"></a>
 
 Looking ahead, I have a few features I'd like to add to the script to make it even more useful. Here are some things I'm planning to work on:
 
@@ -173,13 +188,13 @@ Looking ahead, I have a few features I'd like to add to the script to make it ev
 
 I'm excited to work on these features and make the script even better. As always, if you have any feedback or suggestions, I'm happy to hear them!
 
-# Acknowledgments
+# Acknowledgments<a name="acknowledgments"></a>
 
 * [Restic](https://github.com/restic/restic) for their marverlous software.
 * [Rclone](https://rclone.org/) for their astonishing softwares.
 * [Uprising](https://github.com/uprisingweb/o2switch-backup-all.sh). I got the idea of this current script when I was looking for an existing solution and found his script. I find his wordpress database backup solution especially elegant!
 
-License
+License<a name="license"></a>
 ----------
 
 [BSD 2-Clause License](https://opensource.org/licenses/BSD-2-Clause)
