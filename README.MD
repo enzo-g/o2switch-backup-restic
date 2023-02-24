@@ -165,6 +165,7 @@ The following files are carrying also important part of the configuration:
 Looking ahead, I have a few features I'd like to add to the script to make it even more useful. Here are some of the things I'm planning to work on:
 
 * Adding logs: I'll make it easier to track what the script is doing and identify any issues that arise.
+* Adding support for PostgreSQL: I think it would be interesting to have that feature too.
 * Updating the script and its components: I'll add an option to update the script and any dependencies, so you always have the latest features and bug fixes.
 * Automatic editing of cron at installation: I'll streamline the installation process by automatically configuring the cron job for you.
 * Adding more safety checks: I'll build in additional checks to ensure that the script is running smoothly and safely.
@@ -175,8 +176,9 @@ I'm excited to work on these features and make the script even better. As always
 
 # Acknowledgments
 
-I would like to thanks [Restic](https://github.com/restic/restic) and [Rclone](https://rclone.org/) for their astonishing softwares.
-I would like to express my gratitude to [Uprising](https://github.com/uprisingweb/o2switch-backup-all.sh). I got the idea of this current script when I was looking for an existing solution and found his script. I find his wordpress database backup solution especially elegant!
+* [Restic](https://github.com/restic/restic) for their marverlous software.
+* [Rclone](https://rclone.org/) for their astonishing softwares.
+* [Uprising](https://github.com/uprisingweb/o2switch-backup-all.sh). I got the idea of this current script when I was looking for an existing solution and found his script. I find his wordpress database backup solution especially elegant!
 
 License
 ----------
