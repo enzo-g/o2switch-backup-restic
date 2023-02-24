@@ -30,10 +30,10 @@ DB_BACKUP_DIR="$ROOT_DIR/backup-db"
 export PATH=$PATH:$RESTIC_SCRIPT
 
 # Define the path to the Rclone binary
-$RCLONE_BIN="$RESTIC_SCRIPT/rclone"
+RCLONE_BIN="$RESTIC_SCRIPT/rclone"
 
 # Define the path to the Restic binary
-$RESTIC_BIN="$RESTIC_SCRIPT/restic"
+RESTIC_BIN="$RESTIC_SCRIPT/restic"
 
 #Define the path of restic configuration
 RESTIC_CONF="$RESTIC_SCRIPT/backup-restic-conf.txt"
