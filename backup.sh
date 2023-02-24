@@ -1,8 +1,5 @@
 #!/bin/bash
 # GitHub source: https://github.com/enzo-g/o2switch-backup-restic
-# Disclaimer: This script is provided as-is and without any warranty. The author is not responsible for any problems that may arise from the use of this script, 
-# including but not limited to data loss, system crashes, or other issues. Use at your own risk and make sure to backup your data before running the script.
-
 
 #Argument you can use with the script
 
@@ -29,8 +26,14 @@ RESTIC_SCRIPT="$ROOT_DIR/scripts/backup"
 # Define the directory to store database backups
 DB_BACKUP_DIR="$ROOT_DIR/backup-db"
 
+# Add path of binary during script execution
+export PATH=$PATH:$RESTIC_SCRIPT
+
+# Define the path to the Rclone binary
+$RCLONE_BIN="$RESTIC_SCRIPT/rclone"
+
 # Define the path to the Restic binary
-RESTIC_BIN="$RESTIC_SCRIPT/restic"
+$RESTIC_BIN="$RESTIC_SCRIPT/restic"
 
 #Define the path of restic configuration
 RESTIC_CONF="$RESTIC_SCRIPT/backup-restic-conf.txt"
@@ -54,7 +57,7 @@ function create_htaccess_file() {
   HTACCESS_FILE="$1/.htaccess"
 
   # Create the .htaccess file if it does not exist
-  if [ ! -f "$HTACCESS_FILE" ]; then
+    if [ ! -f "$HTACCESS_FILE" ]; then
     echo "deny from all" > "$HTACCESS_FILE"
     echo ".htaccess file created at $HTACCESS_FILE"
   fi
@@ -113,7 +116,7 @@ function copy_script_to_backup_dir() {
   # Get the current location of the script
   SCRIPT_LOCATION=$(realpath "$0")
   # Copy the script to the backup directory
-  cp "$SCRIPT_LOCATION" "$RESTIC_SCRIPT/"
+    cp "$SCRIPT_LOCATION" "$RESTIC_SCRIPT/"
   chmod +x "$RESTIC_SCRIPT/backup.sh"
 }
 
@@ -158,10 +161,10 @@ function create_restic_files (){
 }
 
 function check_required_files() {
-  local files=("$DB_BACKUP_DIR" "$RESTIC_BIN" "$RESTIC_CONF" "$restic_password_file" "$OTHER_DBS_FILE" "$EXCLUDED_DIRS_FILE")
+  local files=("$DB_BACKUP_DIR" "$RESTIC_BIN" "$RCLONE_BIN" "$RESTIC_CONF" "$restic_password_file" "$OTHER_DBS_FILE" "$EXCLUDED_DIRS_FILE")
   for file in "${files[@]}"; do
     if [ ! -e "$file" ]; then
-      echo "Error: $file does not exist."
+      echo "Error: $file does not exist. All file declared within the function check_required_files have to be present"
       exit 1
     fi
   done
@@ -213,7 +216,7 @@ if [ "$1" = "--backup" ]; then
   create_htaccess_file "$DB_BACKUP_DIR"
   echo "Check if all files needed for the script to execute properly are present"
   check_required_files
-  
+
   # Loop over directories in the root directory to find wordpress installation and dump their DB
   for INSTALLATION_DIR in "$ROOT_DIR"/*/; do
     if [ -f "$INSTALLATION_DIR/wp-config.php" ]; then
@@ -230,7 +233,7 @@ if [ "$1" = "--backup" ]; then
         fi
     fi
   done
-
+  
   # Backup databases not related to WordPress installation
   if [ -f "$OTHER_DBS_FILE" ] && [ -s "$OTHER_DBS_FILE" ]; then
   echo "Start to dump the databases present in the file $OTHER_DBS_FILE"
@@ -275,14 +278,14 @@ if [ "$1" = "--backup" ]; then
 
   # Create a backup with Restic for each directory
   echo "We start to backup the files to the external repository with restic.."
-  "$RESTIC_BIN" backup $ROOT_DIR --repo $restic_repo -p $restic_password $exclude_flags
+  restic backup $ROOT_DIR --repo $restic_repo -p $restic_password $exclude_flags
 
   # On the 15th of the month we clean snapshot older than 3 months and we prune the repo
   if [ "$(date +%d)" -eq 15 ]; then
   # Remove snapshot older than 3 months
-  "$RESTIC_BIN" forget --keep-daily 90 --keep-monthly 3 --repo $restic_repo -p $restic_password
+  restic forget --keep-daily 90 --keep-monthly 3 --repo $restic_repo -p $restic_password
   # Prune the repository
-  "$RESTIC_BIN" prune --repo $restic_repo -p $restic_password
+  restic prune --repo $restic_repo -p $restic_password
   fi
 
   # Clean up old database backup files within the folder $DB_BACKUP_DIR (that's not deleting them directly from restic repo)
