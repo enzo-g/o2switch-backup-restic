@@ -47,6 +47,8 @@ EXCLUDED_DIRS_FILE="$DIR_SCRIPT_BACKUP/backup-excluded-dirs.txt"
 LOG_FILE=$(date +"%Y-%m-%d-%H-%M")"_backup.log"
 #Define how many days we keep the log files
 LOG_DAYS_TO_KEEP=90
+#Define how many days we keep the MySQL dump - Not related to restic backup.
+DUMP_DAYS=15
 
 # FUNCTIONS
 #############
@@ -83,9 +85,22 @@ function create_htaccess_file() {
   fi
 }
 
-
 function delete_old_logs() {
-  find "$DIR_SCRIPT_LOGS" -type f -name "*.log" -mtime +$LOG_DAYS_TO_KEEP -delete
+  COUNT0=$(find "$DIR_SCRIPT_LOGS" -type f -name "*.log" -mtime +$LOG_DAYS_TO_KEEP | wc -l)
+  if [ $COUNT0 -gt 0 ]; then
+    echo "Deleting log files that are $LOG_DAYS_TO_KEEP days old or older."
+    find "$DIR_SCRIPT_LOGS" -type f -name "*.log" -mtime +$LOG_DAYS_TO_KEEP -delete
+  fi
+}
+
+function delete_old_dumps() {
+  # Count the number of files to be deleted
+  COUNT=$(find "$DIR_DB_BACKUP" -name "*.sql.gz" -type f -mtime +$DUMP_DAYS | wc -l)
+  # Output the echo message only if there are files to be deleted
+  if [ $COUNT -gt 0 ]; then
+    echo "Deleting database dump files that are $DUMP_DAYS days old or older."
+    find "$DIR_DB_BACKUP" -name "*.sql.gz" -type f -mtime +$DUMP_DAYS -exec rm {} \;
+  fi
 }
 
 function install_rclone {
@@ -214,6 +229,8 @@ function dump_wordpress_databases() {
   local BACKUP_DIR=""
   local count=0
 
+  echo "Search for Wordpress DB to dump: "
+
   # Parse arguments
   while [ $# -gt 0 ]; do
     case "$1" in
@@ -243,7 +260,7 @@ function dump_wordpress_databases() {
       count=$((count+1))
     fi
   done
-
+  
   # Output the number of installations found or a message if none are found
   if [ $count -eq 0 ]; then
     echo "No WordPress installations found in $ROOT_DIR"
@@ -254,7 +271,6 @@ function dump_wordpress_databases() {
   # Dump the databases for each WordPress installation
   for INSTALLATION_DIR in "$ROOT_DIR"/*/; do
     if [ -f "$INSTALLATION_DIR/wp-config.php" ]; then
-      echo "Starting to dump the DB for WordPress installation detected: $INSTALLATION_DIR"
       # Extract the database connection details from wp-config.php
       DATABASE=$(grep -oP "define\(\s*'DB_NAME'\s*,\s*'\K[^']+" "$INSTALLATION_DIR/wp-config.php")
       DB_USER=$(grep -oP "define\(\s*'DB_USER'\s*,\s*'\K[^']+" "$INSTALLATION_DIR/wp-config.php")
@@ -279,7 +295,7 @@ dump_mysql_dbs() {
   local FILE="$1"
   local NUM_DBS=0
 
-  echo "Check if specific DB has been listed for backup:"
+  echo "Search if specific DB has been listed for backup:"
   # Backup databases not related to WordPress installation
   if [ -f "$FILE" ] && [ -s "$FILE" ]; then
     NUM_DBS=$(grep -v "^#" "$FILE" | wc -l)
@@ -367,7 +383,7 @@ if [ "$1" = "--backup" ]; then
   #Dump other MySQL DB if any listed
   dump_mysql_dbs $OTHER_DBS_FILE
   # Import the list of excluded directories to not backup.
-  echo "Check folders and files excluded from backup."
+  echo "Search for folders and files to exclude from backup."
   while read -r line; do
     if [[ "$line" != \#* ]]; then
       exclude_flags+=" --exclude $line"
@@ -386,13 +402,14 @@ if [ "$1" = "--backup" ]; then
   restic backup $DIR_ROOT --repo $restic_repo -p $RESTIC_PWD_FILE $exclude_flags
   # On the 15th of the month we clean snapshot older than 3 months and we prune the repo
   if [ "$(date +%d)" -eq 15 ]; then
-  # Remove snapshot older than 3 months
-  restic forget --keep-daily 90 --keep-monthly 3 --repo $restic_repo -p $RESTIC_PWD_FILE
-  # Prune the repository
-  restic prune --repo $restic_repo -p $RESTIC_PWD_FILE
+    echo "Removing restic snapshot older than 3 months: "
+    # Remove snapshot older than 3 months
+    restic forget --keep-daily 90 --keep-monthly 3 --repo $restic_repo -p $RESTIC_PWD_FILE
+    # Prune the repository
+    restic prune --repo $restic_repo -p $RESTIC_PWD_FILE
   fi
   # Clean up old database backup files within the folder $DIR_DB_BACKUP (that's not deleting them directly from restic repo)
-  find "$DIR_DB_BACKUP" -name "*.sql.gz" -type f -mtime +15 -delete
+  delete_old_dumps
   #Cleanup old log files
   delete_old_logs
 fi
