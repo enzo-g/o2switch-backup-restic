@@ -353,10 +353,8 @@ fi
 # The sequence below is executed if the --backup argument is being used.
 
 if [ "$1" = "--backup" ]; then
-
   # Redirect all output to the log file and the terminal
-  exec &> >(tee -a "$DIR_SCRIPT_LOGS/$LOG_FILE")
-  
+  {
   my_date=$(date +"%Y-%m-%d %H:%M")
   echo "Backup script is now starting -  $my_date"
   # Call the check_script_location function
@@ -411,4 +409,7 @@ if [ "$1" = "--backup" ]; then
   delete_old_dumps
   #Cleanup old log files
   delete_old_logs
+  echo "Log file: $DIR_SCRIPT_LOGS/$LOG_FILE"
+  } 2>&1 | tee -- "$DIR_SCRIPT_LOGS/$LOG_FILE"
+
 fi
