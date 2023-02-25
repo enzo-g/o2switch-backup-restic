@@ -114,16 +114,19 @@ $ # You will be requested to "enter password for new repository:" You will need 
 
 Now let's edit the configuration files.
 
-* `backup-restic-conf.txt`: Edit that file with the content of the command used to init your restic repository.
-  `"sftp:user_remoteserver@host_remoteserver.com:/home/user_remoteserver/restic"`
-  Within that file you can also edit the path of the file that will contain your restic repo password. I don't recommend to edit it.
-* `backup-restic-pwd.txt`: Insert within that file, the password you have selected.
-* `backup-db-others.txt`: Edit that file if you want to add specific databases to backup that are not related to a wordpress installation.
-  You will need to create an user and to grant him the following permission for those DBs only: `SELECT / LOCK TABLES / SHOW VIEW`
-  Documentation from O2Switch: [Base de données MySQL](https://faq.o2switch.fr/hebergement-mutualise/tutoriels-cpanel/base-donnees-mysql)
+* `backup-restic-conf.txt`: If you want to keep the default script behavior, only edit 'restic_repo'and 'restic_receive_email'
+  * `restic_repo=` Should be similar to the command you wrote previously to init your restic repo.
+  * `restic_receive_email` Define the email address that will receive the logs.
+  * `restic_log_file` Edit that value if you want to give a specific name to your log's file.
+  * `restic_log_days` Define how many days to keep the log's files.
+  * `restic_dump_days` Define how many days to keep the MySQL dumps.
+* `backup-restic-pwd.txt`: Insert within that file you restic repository password.
+* `backup-db-others.txt`: Edit that file if you want to add specific databases not related to a wordpress installation and that you want to backup.
+  * You will need to create an user and to grant him the following permission for those DBs only: `SELECT / LOCK TABLES / SHOW VIEW`
+  * Documentation from O2Switch: [Base de données MySQL](https://faq.o2switch.fr/hebergement-mutualise/tutoriels-cpanel/base-donnees-mysql)
 * `backup-excluded-dirs.txt`: Edit that file to add folders to not backup, check the content some folders are excluded by default.
-  You can use the command  `ls -dA .*/ | grep -Ev '^(\./|\.\./)$'` to obtain the list of all hidden folder at the root of your home directory.
-  Most of those directories can be excluded from backup. I recommend you to add them within the file.
+  * You can use the command  `ls -dA .*/ | grep -Ev '^(\./|\.\./)$'` to obtain the list of all hidden folder at the root of your home directory.
+    Most of those directories can be excluded from backup. I recommend you to add them within the file.
 
 ### Step 4 - Set a cron
 

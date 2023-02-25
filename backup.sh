@@ -432,7 +432,7 @@ if [ "$1" = "--backup" ]; then
     if [ "$(date +%d)" -eq 15 ]; then
       echo "Removing restic snapshot older than 3 months: "
       # Remove snapshot older than 3 months
-      restic forget --keep-daily 90 --keep-monthly 3 --repo $restic_repo -p $RESTIC_PWD_FILE
+      restic forget --keep-within-daily 90 --repo $restic_repo -p $RESTIC_PWD_FILE
       # Prune the repository
       restic prune --repo $restic_repo -p $RESTIC_PWD_FILE
     fi
