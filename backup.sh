@@ -43,11 +43,13 @@ OTHER_DBS_FILE="$DIR_SCRIPT_BACKUP/backup-db-others.txt"
 # Define the file containing the directories to exclude
 EXCLUDED_DIRS_FILE="$DIR_SCRIPT_BACKUP/backup-excluded-dirs.txt"
 #Define log file name
-LOG_FILE=$(date +"%Y-%m-%d-%H-%M")"_backup.log"
+LOG_FILE=$(date +"%Y-%m-%d-%H-%M")"_backup.txt"
 #Define how many days we keep the log files
 LOG_DAYS_TO_KEEP=90
 #Define how many days we keep the MySQL dump - Not related to restic backup.
 DUMP_DAYS=15
+#DEFINE EMAIL
+EMAIL=""
 
 # FUNCTIONS
 #############
@@ -85,10 +87,10 @@ function create_htaccess_file() {
 }
 
 function delete_old_logs() {
-  COUNT0=$(find "$DIR_SCRIPT_LOGS" -type f -name "*.log" -mtime +$LOG_DAYS_TO_KEEP | wc -l)
+  COUNT0=$(find "$DIR_SCRIPT_LOGS" -type f -name "*.txt" -mtime +$LOG_DAYS_TO_KEEP | wc -l)
   if [ $COUNT0 -gt 0 ]; then
     echo "Deleting log files that are $LOG_DAYS_TO_KEEP days old or older."
-    find "$DIR_SCRIPT_LOGS" -type f -name "*.log" -mtime +$LOG_DAYS_TO_KEEP -delete
+    find "$DIR_SCRIPT_LOGS" -type f -name "*.txt" -mtime +$LOG_DAYS_TO_KEEP -delete
   fi
 }
 
@@ -355,61 +357,81 @@ fi
 if [ "$1" = "--backup" ]; then
   # Redirect all output to the log file and the terminal
   {
-  my_date=$(date +"%Y-%m-%d %H:%M")
-  echo "Backup script is now starting -  $my_date"
-  # Call the check_script_location function
-  echo "Check script location:"
-  is_script_in_backup_dir
-  if [ "$is_script_in_backup_dir" = true ]; then
-      echo "[✓] Script located in: $DIR_SCRIPT_BACKUP"
-  else
-      echo "[X] Script have to be executed from: $DIR_SCRIPT_BACKUP"
-      exit 1
-  fi
-
-  echo "Check if all directories needed are present:"
-  check_required_files "$DIR_SCRIPT_LOGS" "$DIR_DB_BACKUP"
-  echo "Check if all files needed are present:"
-  check_required_files  "$RESTIC_BIN" "$RCLONE_BIN" "$RESTIC_CONF" "$RESTIC_PWD_FILE" "$OTHER_DBS_FILE" "$EXCLUDED_DIRS_FILE"
-  #Protect the script directory - prevent access from the web
-  echo "Check .htaccess files content: "
-  create_htaccess_file "$DIR_SCRIPT_BACKUP"
-  create_htaccess_file "$DIR_DB_BACKUP"
-  #Dump WP DB 
-  dump_wordpress_databases --root-dir=$DIR_WP --backup-dir=$DIR_DB_BACKUP
-  #Dump other MySQL DB if any listed
-  dump_mysql_dbs $OTHER_DBS_FILE
-  # Import the list of excluded directories to not backup.
-  echo "Search for folders and files to exclude from backup."
-  while read -r line; do
-    if [[ "$line" != \#* ]]; then
-      exclude_flags+=" --exclude $line"
+    my_date=$(date +"%Y-%m-%d %H:%M")
+    echo "Backup script is now starting -  $my_date"
+    # Call the check_script_location function
+    echo "Check script location:"
+    is_script_in_backup_dir
+    if [ "$is_script_in_backup_dir" = true ]; then
+        echo "[✓] Script located in: $DIR_SCRIPT_BACKUP"
+    else
+        echo "[X] Script have to be executed from: $DIR_SCRIPT_BACKUP"
+        exit 1
     fi
-  done < "$EXCLUDED_DIRS_FILE"
-  # Load RESTIC CONF
-  echo "Load Restic repository to use for the backup."
-  if [ -f "$RESTIC_CONF" ]; then
-    . "$RESTIC_CONF"
-  else
-    echo "[X] Restic configuration file not found: $RESTIC_CONF"
-    exit 1
-  fi
-  # Restic will backup all directories located in $DIR_ROOT except the one listed for exclusion.
-  echo "Start to backup your data to your restic repo."
-  restic backup $DIR_ROOT --repo $restic_repo -p $RESTIC_PWD_FILE $exclude_flags
-  # On the 15th of the month we clean snapshot older than 3 months and we prune the repo
-  if [ "$(date +%d)" -eq 15 ]; then
-    echo "Removing restic snapshot older than 3 months: "
-    # Remove snapshot older than 3 months
-    restic forget --keep-daily 90 --keep-monthly 3 --repo $restic_repo -p $RESTIC_PWD_FILE
-    # Prune the repository
-    restic prune --repo $restic_repo -p $RESTIC_PWD_FILE
-  fi
-  # Clean up old database backup files within the folder $DIR_DB_BACKUP (that's not deleting them directly from restic repo)
-  delete_old_dumps
-  #Cleanup old log files
-  delete_old_logs
-  echo "Log file: $DIR_SCRIPT_LOGS/$LOG_FILE"
-  } 2>&1 | tee -- "$DIR_SCRIPT_LOGS/$LOG_FILE"
 
+    echo "Check if all directories needed are present:"
+    check_required_files "$DIR_SCRIPT_LOGS" "$DIR_DB_BACKUP"
+    echo "Check if all files needed are present:"
+    check_required_files  "$RESTIC_BIN" "$RCLONE_BIN" "$RESTIC_CONF" "$RESTIC_PWD_FILE" "$OTHER_DBS_FILE" "$EXCLUDED_DIRS_FILE"
+    #Protect the script directory - prevent access from the web
+    echo "Check .htaccess files content: "
+    create_htaccess_file "$DIR_SCRIPT_BACKUP"
+    create_htaccess_file "$DIR_DB_BACKUP"
+    #Dump WP DB 
+    dump_wordpress_databases --root-dir=$DIR_WP --backup-dir=$DIR_DB_BACKUP
+    #Dump other MySQL DB if any listed
+    dump_mysql_dbs $OTHER_DBS_FILE
+    # Import the list of excluded directories to not backup.
+    echo "Search for folders and files to exclude from backup."
+    while read -r line; do
+      if [[ "$line" != \#* ]]; then
+        exclude_flags+=" --exclude $line"
+      fi
+    done < "$EXCLUDED_DIRS_FILE"
+    # Load RESTIC CONF
+    echo "Load Restic repository to use for the backup."
+    if [ -f "$RESTIC_CONF" ]; then
+      . "$RESTIC_CONF"
+    else
+      echo "[X] Restic configuration file not found: $RESTIC_CONF"
+      exit 1
+    fi
+    # Restic will backup all directories located in $DIR_ROOT except the one listed for exclusion.
+    echo "Start to backup your data to your restic repo."
+    restic backup $DIR_ROOT --repo $restic_repo -p $RESTIC_PWD_FILE $exclude_flags
+    RESTIC_EXIT=$?
+    # On the 15th of the month we clean snapshot older than 3 months and we prune the repo
+    if [ "$(date +%d)" -eq 15 ]; then
+      echo "Removing restic snapshot older than 3 months: "
+      # Remove snapshot older than 3 months
+      restic forget --keep-daily 90 --keep-monthly 3 --repo $restic_repo -p $RESTIC_PWD_FILE
+      # Prune the repository
+      restic prune --repo $restic_repo -p $RESTIC_PWD_FILE
+    fi
+    # Clean up old database backup files within the folder $DIR_DB_BACKUP (that's not deleting them directly from restic repo)
+    delete_old_dumps
+    #Cleanup old log files
+    delete_old_logs
+    echo "Log file: $DIR_SCRIPT_LOGS/$LOG_FILE"
+    echo "Sending the log file by email."
+    case $RESTIC_EXIT in
+      0)
+        RESTIC_EXIT_SBJ="O2Switch backup succeed: $LOG_FILE"
+        RESTIC_EXIT_MSG="Hi! Restic snapshot created successfully!"
+        ;;
+      1)
+        RESTIC_EXIT_SBJ="O2Switch backup failed: $LOG_FILE"
+        RESTIC_EXIT_MSG="Hi! Fatal error: no snapshot created"
+        ;;
+      3)
+        RESTIC_EXIT_SBJ="O2Switch backup incomplete: $LOG_FILE"
+        RESTIC_EXIT_MSG="Hi! Incomplete snapshot created: some source data could not be read"
+        ;;
+      *)
+        RESTIC_EXIT_SBJ="O2Switch backup error: $LOG_FILE"
+        RESTIC_EXIT_MSG="Hi! Unknown error occurred"
+        ;;
+    esac
+    echo $RESTIC_EXIT_MSG | mailx -s "$RESTIC_EXIT_SBJ" -a "$DIR_SCRIPT_LOGS/$LOG_FILE" $EMAIL 
+  } 2>&1 | tee -- "$DIR_SCRIPT_LOGS/$LOG_FILE"
 fi
