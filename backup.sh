@@ -42,14 +42,6 @@ RESTIC_PWD_FILE="$DIR_SCRIPT_BACKUP/backup-restic-pwd.txt"
 OTHER_DBS_FILE="$DIR_SCRIPT_BACKUP/backup-db-others.txt"
 # Define the file containing the directories to exclude
 EXCLUDED_DIRS_FILE="$DIR_SCRIPT_BACKUP/backup-excluded-dirs.txt"
-#Define log file name
-LOG_FILE=$(date +"%Y-%m-%d-%H-%M")"_backup.txt"
-#Define how many days we keep the log files
-LOG_DAYS_TO_KEEP=90
-#Define how many days we keep the MySQL dump - Not related to restic backup.
-DUMP_DAYS=15
-#DEFINE EMAIL
-EMAIL=""
 
 # FUNCTIONS
 #############
@@ -186,13 +178,32 @@ function create_file_exclude_directory (){
   fi
 }
 
-function create_restic_files (){
-  # Create the Restic configuration file if it does not exist
-  if [ ! -f "$RESTIC_CONF" ]; then
-    echo "# Set the Restic repository
-    restic_repo=\"sftp:user_remoteserver@host_remoteserver.com:/home/user_remoteserver/restic\"" > "$RESTIC_CONF"
+function create_restic_conf_files {
+  if [ -f "$RESTIC_CONF" ]; then
+    # Put all the content of the file in comment
+    sed -i 's/^/# /' $RESTIC_CONF
+    # Echo a message to ask the user to review the content of the file
+    echo '[!] File already exist: $RESTIC_CONF '
+    echo "[!] Your previous settings will be commented out"
+    echo '# Please review the previous settings before making changes:' >> $RESTIC_CONF
+    echo "# (Your previous settings are commented out)" >> $RESTIC_CONF
+    echo '# ' >> $RESTIC_CONF
+    echo "# $(date +"%Y-%m-%d %H:%M:%S") - Settings added by script" >> $RESTIC_CONF
+    echo '# ' >> $RESTIC_CONF
+  else
+    # Add new settings to the file
+    echo '# Set the Restic repository' >> $RESTIC_CONF
+    echo 'restic_repo="sftp:user_remoteserver@host_remoteserver.com:/home/user_remoteserver/restic"' >> $RESTIC_CONF
+    echo '#restic_repo="rclone:example:O2switch/R1"' >> $RESTIC_CONF
+    echo '# Define log file name' >> $RESTIC_CONF
+    echo 'restic_log_file=$(date +"%Y-%m-%d-%H-%M")"_backup.txt"' >> $RESTIC_CONF
+    echo '# Define how many days we keep the log files' >> $RESTIC_CONF
+    echo 'restic_log_days=90' >> $RESTIC_CONF
+    echo '# Define how many days we keep the MySQL dump' >> $RESTIC_CONF
+    echo 'restic_dump_days=15' >> $RESTIC_CONF
+    echo '# DEFINE RECEIVER EMAIL' >> $RESTIC_CONF
+    echo 'restic_receive_email="user@example.com"' >> $RESTIC_CONF
   fi
-
   # Create the Restic password file if it doesn't exist and add sample content
   if [ ! -f "$RESTIC_PWD_FILE" ]; then
     echo "INPUT_YOUR_RESTIC_REPO_PASSWORD_HERE" > "$RESTIC_PWD_FILE"
@@ -341,7 +352,7 @@ if [ "$1" = "--install" ]; then
   install_rclone
   create_db_others_file
   create_file_exclude_directory
-  create_restic_files
+  create_restic_conf_files
   if [ "$is_script_in_backup_dir" = false ]; then
       echo "We copy the script in the dir:$DIR_SCRIPT_BACKUP"
       copy_script_to_backup_dir
@@ -353,9 +364,32 @@ fi
 # BACKUP  
 ##########
 # The sequence below is executed if the --backup argument is being used.
-
 if [ "$1" = "--backup" ]; then
-  # Redirect all output to the log file and the terminal
+    
+    #VARIABLES LOADED FROM EXTERNAL FILE
+    #####################################
+    # Load RESTIC CONF
+    echo "Load variables from: $RESTIC_CONF"
+    if [ -f "$RESTIC_CONF" ]; then
+      echo "[✓] Restic configuration file found: $RESTIC_CONF"
+      . "$RESTIC_CONF"
+    else
+      echo "[X] Restic configuration file not found: $RESTIC_CONF"
+      echo "[!] Have you run backup.sh --install previously?"
+      exit 1
+    fi
+
+    RESTIC_CONF_REPO=$restic_repo
+    #Define log file name
+    LOG_FILE=$restic_log_file
+    #Define how many days we keep the log files
+    LOG_DAYS_TO_KEEP=$restic_log_days
+    #Define how many days we keep the MySQL dump - Not related to restic backup.
+    DUMP_DAYS=$restic_dump_days
+    #DEFINE EMAIL
+    EMAIL=$restic_receive_email
+
+  # Redirect all output to the log file and the terminal    
   {
     my_date=$(date +"%Y-%m-%d %H:%M")
     echo "Backup script is now starting -  $my_date"
@@ -377,6 +411,7 @@ if [ "$1" = "--backup" ]; then
     echo "Check .htaccess files content: "
     create_htaccess_file "$DIR_SCRIPT_BACKUP"
     create_htaccess_file "$DIR_DB_BACKUP"
+
     #Dump WP DB 
     dump_wordpress_databases --root-dir=$DIR_WP --backup-dir=$DIR_DB_BACKUP
     #Dump other MySQL DB if any listed
@@ -388,14 +423,7 @@ if [ "$1" = "--backup" ]; then
         exclude_flags+=" --exclude $line"
       fi
     done < "$EXCLUDED_DIRS_FILE"
-    # Load RESTIC CONF
-    echo "Load Restic repository to use for the backup."
-    if [ -f "$RESTIC_CONF" ]; then
-      . "$RESTIC_CONF"
-    else
-      echo "[X] Restic configuration file not found: $RESTIC_CONF"
-      exit 1
-    fi
+
     # Restic will backup all directories located in $DIR_ROOT except the one listed for exclusion.
     echo "Start to backup your data to your restic repo."
     restic backup $DIR_ROOT --repo $restic_repo -p $RESTIC_PWD_FILE $exclude_flags
