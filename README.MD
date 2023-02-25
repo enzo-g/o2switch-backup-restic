@@ -85,10 +85,14 @@ Step by step Installation and configuration<a name="step-by-step-installation-an
   $ rm backup.sh"sftp:user_remoteserver@host_remoteserver.com:/home/user_remoteserver/restic"
   $ # delete the backup.sh file from the root directory
 ```
+### Step 2 - Edit 'backup-restic-pwd.txt'
 
-### Step 2 - Prepare a remote repository to welcome your files.
+Edit the file called `backup-restic-pwd.txt` and save the password inside that you want to use for your restic backup. 
+Remember, this password is essential for several Restic tasks, so let's keep a copy of it safe outside of O2switch. Though I don't anticipate any issues, we need to understand how crucial this password is in case of a massive O2switch infrastructure crash. Without it, you won't be able to access any of your Restic backups. So let's take a moment to ensure this password is well-protected and safely backed up!
 
-#### Example with SFTP
+### Step 3 - Prepare a remote repository to welcome your files.
+
+#### 3.1 Example with SFTP
 
 Make sure to whitelist the traffic toward your remote server (https://faq.o2switch.fr/hebergement-mutualise/tutoriels-cpanel/whitelist-firewall)
 You should have a credential to login on your remote server.
@@ -105,22 +109,51 @@ This will allow your script to connect without password to your remote server.
 It's time to prepare your restic repository
 
 ```shell
-$ $HOME/scripts/backup/./restic -r "sftp:user_remoteserver@host_remoteserver.com:/home/user_remoteserver/restic" init
+$ $HOME/scripts/backup/./restic -r "sftp:user_remoteserver@host_remoteserver.com:/home/user_remoteserver/restic" init -p $HOME/scripts/backup/./backup-restic-pwd.txt
 $ # As long as user_remote has enougth permissions, the directory will be automatically created: /home/user_remoteserver/restic
-$ # You will be requested to "enter password for new repository:" You will need that password later, don't lose it.
+$ # You don't need to type your restic password because its loaded from the file backup-restic-pwd.txt
+```
+#### 3.2 Example with rclone
+
+If you choose to use the sftp option, you do not need to follow the instructions provided in the rclone example. While creating that guide, I found that Mega has been integrated with rclone in a very useful way. Therefore, you should take the time to create a Mega account, which will give you access to 50GB of free storage. After creating the account, you can run the following command:
+
+```shell
+$ $HOME/scripts/backup/./rclone config create mymega mega user user@example.com pass Your-Password
+  [mymega]
+  type = mega
+  user = user@example.com
+  pass = *** ENCRYPTED ***
+```
+To verify that your rclone configuration is accurate, we will create a file called "demo.txt" and confirm its existence. You can also check this simultaneously using your web browser.
+
+```shell
+#Create a file
+$ $HOME/scripts/backup/./rclone touch mymega:demo.txt
+#Check for the file
+$ $HOME/scripts/backup/./rclone ls mymega:
+  0 demo.txt
 ```
 
-### Step 3 - Edit the configuration files
+It's time to prepare your restic repository
+
+```shell
+$ $HOME/scripts/backup/./restic -r "$HOME/scripts/backup/./rclone:mymega:restic" init -p $HOME/scripts/backup/./backup-restic-pwd.txt
+$ # As long as user_remote has enougth permissions, the directory will be automatically created: /restic
+$ # You don't need to type your restic password because its loaded from the file backup-restic-pwd.txt
+```
+
+### Step 4 - Edit the configuration files
 
 Now let's edit the configuration files.
 
 * `backup-restic-conf.txt`: If you want to keep the default script behavior, only edit 'restic_repo'and 'restic_receive_email'
-  * `restic_repo=` Should be similar to the command you wrote previously to init your restic repo.
+  * `restic_repo=` Should be similar to the command you wrote previously to init your restic repo. 
+    * sftp solution: sftp:user_remoteserver@host_remoteserver.com:/home/user_remoteserver/restic
+    * rclone solution: rclone:mymega:restic
   * `restic_receive_email` Define the email address that will receive the logs.
   * `restic_log_file` Edit that value if you want to give a specific name to your log's file.
   * `restic_log_days` Define how many days to keep the log's files.
   * `restic_dump_days` Define how many days to keep the MySQL dumps.
-* `backup-restic-pwd.txt`: Insert within that file you restic repository password.
 * `backup-db-others.txt`: Edit that file if you want to add specific databases not related to a wordpress installation and that you want to backup.
   * You will need to create an user and to grant him the following permission for those DBs only: `SELECT / LOCK TABLES / SHOW VIEW`
   * Documentation from O2Switch: [Base de données MySQL](https://faq.o2switch.fr/hebergement-mutualise/tutoriels-cpanel/base-donnees-mysql)
@@ -128,7 +161,7 @@ Now let's edit the configuration files.
   * You can use the command  `ls -dA .*/ | grep -Ev '^(\./|\.\./)$'` to obtain the list of all hidden folder at the root of your home directory.
     Most of those directories can be excluded from backup. I recommend you to add them within the file.
 
-### Step 4 - Set a cron
+### Step 5 - Set a cron
 
 You want that script to be automatically executed, for that we use crontab. 
 You can do that from [O2switch cpanel](https://faq.o2switch.fr/hebergement-mutualise/tutoriels-cpanel/taches-cron) or from command line. 
@@ -139,7 +172,7 @@ $ 0 0 * * * $HOME/scripts/backup/backup.sh --backup
 $ # Ctrl + o to save your change and Ctrl + x to quit nano
 ```
 
-### Step 5 - Test our installation / launch our first backup
+### Step 6 - Test our installation / launch our first backup
 
 You are probably impatient at this point to test if your backup is going to work properly.
 You can execute that command to launch your first backup: `$HOME/scripts/backup/backup.sh --backup`
