@@ -92,6 +92,9 @@ Remember, this password is essential for several Restic tasks, so let's keep a c
 
 ### Step 3 - Prepare a remote repository to welcome your files.
 
+In any case, first execute the following command in your shell: `export PATH=$PATH:/home2/ufza5835/scripts/backup`
+This command is allowing you to use the time of your session the executable "restic" and  "rclone" without typing their full path. (ex: $HOME/scripts/backup/./restic)
+
 #### 3.1 Example with SFTP
 
 Make sure to whitelist the traffic toward your remote server (https://faq.o2switch.fr/hebergement-mutualise/tutoriels-cpanel/whitelist-firewall)
@@ -109,7 +112,7 @@ This will allow your script to connect without password to your remote server.
 It's time to prepare your restic repository
 
 ```shell
-$ $HOME/scripts/backup/./restic -r "sftp:user_remoteserver@host_remoteserver.com:/home/user_remoteserver/restic" init -p $HOME/scripts/backup/./backup-restic-pwd.txt
+$ restic -r "sftp:user_remoteserver@host_remoteserver.com:/home/user_remoteserver/restic" init -p $HOME/scripts/backup/backup-restic-pwd.txt
 $ # As long as user_remote has enougth permissions, the directory will be automatically created: /home/user_remoteserver/restic
 $ # You don't need to type your restic password because its loaded from the file backup-restic-pwd.txt
 ```
@@ -118,7 +121,7 @@ $ # You don't need to type your restic password because its loaded from the file
 If you choose to use the sftp option, you do not need to follow the instructions provided in the rclone example. While creating that guide, I found that Mega has been integrated with rclone in a very useful way. Therefore, you should take the time to create a Mega account, which will give you access to 50GB of free storage. After creating the account, you can run the following command:
 
 ```shell
-$ $HOME/scripts/backup/./rclone config create mymega mega user user@example.com pass Your-Password
+$ rclone config create mymega mega user user@example.com pass Your-Password
   [mymega]
   type = mega
   user = user@example.com
@@ -128,16 +131,16 @@ To verify that your rclone configuration is accurate, we will create a file call
 
 ```shell
 #Create a file
-$ $HOME/scripts/backup/./rclone touch mymega:demo.txt
+$ rclone touch mymega:demo.txt
 #Check for the file
-$ $HOME/scripts/backup/./rclone ls mymega:
+$ rclone ls mymega:
   0 demo.txt
 ```
 
 It's time to prepare your restic repository
 
 ```shell
-$ $HOME/scripts/backup/./restic -r "$HOME/scripts/backup/./rclone:mymega:restic" init -p $HOME/scripts/backup/./backup-restic-pwd.txt
+$ restic -r "rclone:mymega:restic" init -p $HOME/scripts/backup/backup-restic-pwd.txt
 $ # As long as user_remote has enougth permissions, the directory will be automatically created: /restic
 $ # You don't need to type your restic password because its loaded from the file backup-restic-pwd.txt
 ```
@@ -148,8 +151,8 @@ Now let's edit the configuration files.
 
 * `backup-restic-conf.txt`: If you want to keep the default script behavior, only edit 'restic_repo'and 'restic_receive_email'
   * `restic_repo=` Should be similar to the command you wrote previously to init your restic repo. 
-    * sftp solution: sftp:user_remoteserver@host_remoteserver.com:/home/user_remoteserver/restic
-    * rclone solution: rclone:mymega:restic
+    * Example with sftp: sftp:user_remoteserver@host_remoteserver.com:/home/user_remoteserver/restic
+    * Excample with rclone: rclone:mymega:restic
   * `restic_receive_email` Define the email address that will receive the logs.
   * `restic_log_file` Edit that value if you want to give a specific name to your log's file.
   * `restic_log_days` Define how many days to keep the log's files.
