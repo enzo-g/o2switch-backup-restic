@@ -16,8 +16,6 @@ fi
 # VARIABLES 
 #############
 
-# Add path of binary during script execution
-export PATH=$PATH:$DIR_SCRIPT_BACKUP
 # Define the root directory
 DIR_ROOT="$HOME"
 # Define the directory of your wordpress installations - default is $HOME
@@ -42,6 +40,8 @@ RESTIC_PWD_FILE="$DIR_SCRIPT_BACKUP/backup-restic-pwd.txt"
 OTHER_DBS_FILE="$DIR_SCRIPT_BACKUP/backup-db-others.txt"
 # Define the file containing the directories to exclude
 EXCLUDED_DIRS_FILE="$DIR_SCRIPT_BACKUP/backup-excluded-dirs.txt"
+# Add path of binary during script execution
+export PATH=$PATH:$DIR_SCRIPT_BACKUP
 
 # FUNCTIONS
 #############
