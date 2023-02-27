@@ -59,16 +59,17 @@ $ ./backup.sh --backup
 Prerequesite<a name="prerequisite"></a>
 ---------------------
 * Before you get started with the script, it's a good idea to have some experience with Restic or Rclone. If you're not familiar with these tools, don't worry - I've included some links to documentation that can help you get up to speed. The step-by-step configuration is covering the basic too.
-  * Documentation about Restic: (https://restic.readthedocs.io/en/latest/010_introduction.html)
-  * Documentation to use Rclone with Restic: (https://restic.readthedocs.io/en/latest/030_preparing_a_new_repo.html?highlight=rclone#other-services-via-rclone)
+  * [Documentation about Restic](https://restic.readthedocs.io/en/latest/010_introduction.html)
+  * [Documentation to use Rclone with Restic](https://restic.readthedocs.io/en/latest/030_preparing_a_new_repo.html?highlight=rclone#other-services-via-rclone)
 
 * Restic can backup to multiple cloud services, such as Rest Server, Amazon S3, Minio, and Azure, as well as locally or with SFTP.
   * If you're planning to use SFTP, you'll need to declare your remote server IP in the Cpanel interface to unlock the traffic. We've included a link to the official O2switch documentation that explains how to do this.
-    * Official O2switch documentation: (https://faq.o2switch.fr/hebergement-mutualise/tutoriels-cpanel/whitelist-firewall)
+    * [Official O2switch documentation](https://faq.o2switch.fr/hebergement-mutualise/tutoriels-cpanel/whitelist-firewall)
     * Cpanel > Outils > Autorisation SSH, and declare you remote server IP on port 22
   * Note that OneDrive services are whitelisted by O2switch and can be used by default with Rclone.
 
-* Finally, it's important to have shell access to your web hosting. If you haven't already requested this, I've included a link to the O2switch documentation that explains how to do it. (https://faq.o2switch.fr/hebergement-mutualise/acces-ssh-shell-cli-cmdline)
+* Finally, it's important to have shell access to your web hosting. If you haven't already requested this, I've included a link to the O2switch documentation that explains how to do it:
+  * https://faq.o2switch.fr/hebergement-mutualise/acces-ssh-shell-cli-cmdline
 
 I hope this helps you prepare for using the script. If you have any questions or run into any issues, don't hesitate to reach out - I'm here to help!
 
@@ -194,10 +195,10 @@ The script will:
   * $HOME/scripts/backup
   * $HOME/scripts/backup/logs
 * Create the following files:
-  * backup-restic-pwd.txt
-  * backup-restic-conf.txt
-  * backup-excluded-dirs.txt
-  * backup-db-others.txt
+  * $HOME/scripts/backup/backup-restic-pwd.txt
+  * $HOME/scripts/backup/backup-restic-conf.txt
+  * $HOME/scripts/backup/backup-excluded-dirs.txt
+  * $HOME/scripts/backup/backup-db-others.txt
 * Download needed executables:
   * Download the latest version of restic from github and unzip it within the directory: $HOME/scripts/backup
   * Download the latest version of rclone from github and unzip it within the directory: $HOME/scripts/backup
