@@ -1,5 +1,8 @@
 # O2Switch Backup with Restic
 
+[Documentation in English.](README.MD)
+[Documentation en français.](Readme-fr.MD) 
+
 ## Script Description<a name="script-description"></a>
 
 This Bash shell script is designed to backup your website's data and MySQL databases from [O2Switch's infrastructure](https://www.o2switch.fr/) to a remote cloud service of your choice.
@@ -19,6 +22,7 @@ The decision to use this script to backup your data with O2Switch's infrastructu
   - [Prerequisite](#prerequisite)
   - [Step by step Installation and configuration](#step-by-step-installation-and-configuration)
 - [More details](#more-details)
+  - [What does the script change on my system](#change-script)
   - [Script arguments](#script-arguments)
   - [Script Configuration](#script-configuration)
 - [Next Steps](#next-steps)
@@ -76,14 +80,12 @@ Step by step Installation and configuration<a name="step-by-step-installation-an
 ```shell
   $ # Copy the script backup.sh to your root directory "/home2/username/" either from your cpanel 
   $ # or by using 'nano' to create a new file and copy-paste the content of backup.sh to your file.
+  $ #Create a new file with nano and paste the content of backup.sh it, Save that file with Ctrl+O and close it file with Ctrl+X
   $ nano backup.sh
-  $ # Paste the content in it, and save it with Ctrl+O and close the file with Ctrl+X
+  $ # Make the script executable with the following command.
   $ chmod +x backup.sh
-  $ # Allow you to execute the script
+  $ # Execute the script with the argument --install.
   $ backup.sh --install
-  $ # This command create all folders and file needed and copy the backup script within the folder scripts/backup
-  $ rm backup.sh"sftp:user_remoteserver@host_remoteserver.com:/home/user_remoteserver/restic"
-  $ # delete the backup.sh file from the root directory
 ```
 ### Step 2 - Edit 'backup-restic-pwd.txt'
 
@@ -181,6 +183,25 @@ You are probably impatient at this point to test if your backup is going to work
 You can execute that command to launch your first backup: `$HOME/scripts/backup/backup.sh --backup`
 
 # More details<a name="more-details"></a>
+
+What does the script change on my system?<a name="script-change"></a>
+---------------------
+
+The script will:
+* Create the following directories:
+  * $HOME/backup-db
+  * $HOME/scripts
+  * $HOME/scripts/backup
+  * $HOME/scripts/backup/logs
+* Create the following files:
+  * backup-restic-pwd.txt
+  * backup-restic-conf.txt
+  * backup-excluded-dirs.txt
+  * backup-db-others.txt
+* Download needed executables:
+  * Download the latest version of restic from github and unzip it within the directory: $HOME/scripts/backup
+  * Download the latest version of rclone from github and unzip it within the directory: $HOME/scripts/backup
+* Make sure the script file backup.sh is located within the folder $HOME/scripts/backup
 
 Script arguments<a name="script-arguments"></a>
 ---------------------
