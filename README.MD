@@ -1,7 +1,7 @@
 # O2Switch Backup with Restic
 
-[Documentation in English.](README.MD)
-[Documentation en français.](Readme-fr.MD) 
+* [Documentation in English.](README.MD)
+* [Documentation en français.](Readme-fr.MD) 
 
 ## Script Description<a name="script-description"></a>
 
@@ -100,7 +100,7 @@ This command is allowing you to use the time of your session the executable "res
 
 #### 3.1 Example with SFTP
 
-Make sure to whitelist the traffic toward your remote server (https://faq.o2switch.fr/hebergement-mutualise/tutoriels-cpanel/whitelist-firewall)
+Make sure to whitelist the traffic toward your remote server: [Whitelist Firewall](https://faq.o2switch.fr/hebergement-mutualise/tutoriels-cpanel/whitelist-firewall)
 You should have a credential to login on your remote server.
 Below the command to repare an SSH key on O2switch server and to copy it to your remote server.
 This will allow your script to connect without password to your remote server.

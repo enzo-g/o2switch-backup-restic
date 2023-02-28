@@ -1,7 +1,7 @@
 # Sauvegarde O2Switch avec Restic
 
-[Documentation in English.](README.MD)
-[Documentation en français.](Readme-fr.MD) 
+* [Documentation in English.](README.MD)
+* [Documentation en français.](Readme-fr.MD) 
 
 ## Description du script<a name="description-du-script"></a>
 
