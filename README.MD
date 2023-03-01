@@ -242,12 +242,12 @@ The following variables within the script `backup.sh` can be edited to change th
 
 Looking ahead, I have a few features I'd like to add to the script to make it even more useful. Here are some things I'm planning to work on:
 
-* Adding support for PostgreSQL: I think it would be interesting to have that feature too.
 * Updating the script and its components: I'll add an option to update the script and any dependencies, so you always have the latest features and bug fixes.
 * Automatic editing of cron at installation: I'll streamline the installation process by automatically configuring the cron job for you.
 * Adding more safety checks: I'll build in additional checks to ensure that the script is running smoothly and safely.
 * Adding a script check and repair option: I'll include an option to check the current installation and fix any issues in a cleaner way if needed.
 * Providing documentation on how to restore files from the restic backup: I'll create a guide to help you restore your files in case you ever need to recover from a data loss.
+* Add the automatic support of restic unlock --cleanup-cache if there is a problem with snapshot locked
 
 I'm excited to work on these features and make the script even better. As always, if you have any feedback or suggestions, I'm happy to hear them!
 

@@ -208,8 +208,10 @@ function create_restic_conf_files {
     echo '# Set the Restic repository' >> $RESTIC_CONF
     echo 'restic_repo="sftp:user_remoteserver@host_remoteserver.com:/home/user_remoteserver/restic"' >> $RESTIC_CONF
     echo '#restic_repo="rclone:example:O2switch/R1"' >> $RESTIC_CONF
-    echo '# Define restic repo' >> $RESTIC_CONF
-    echo 'restic_log_file=$(date +"%Y-%m-%d-%H-%M")"_backup.txt"' >> $RESTIC_CONF
+    echo '# Define how many days of backup restic should preserve' >> $RESTIC_CONF
+    echo 'restic_keep_days=90d' >> $RESTIC_CONF
+    echo '# Define which day of the month, restic should clean the backup repository' >> $RESTIC_CONF
+    echo 'restic_clean_day=15' >> $RESTIC_CONF
     echo '# Define log file name' >> $RESTIC_CONF
     echo 'restic_log_file=$(date +"%Y-%m-%d-%H-%M")"_backup.txt"' >> $RESTIC_CONF
     echo '# Define how many days we keep the log files' >> $RESTIC_CONF
@@ -457,7 +459,7 @@ if [ "$1" = "--backup" ]; then
     echo "Check if all directories needed are present:"
     check_required_files "$DIR_SCRIPT_LOGS" "$DIR_DB_BACKUP"
     echo "Check if all files needed are present:"
-    check_required_files  "$RESTIC_BIN" "$RCLONE_BIN" "$RESTIC_CONF" "$RESTIC_PWD_FILE" "$OTHER_DBS_FILE" "$EXCLUDED_DIRS_FILE"
+    check_required_files  "$RESTIC_BIN" "$RCLONE_BIN" "$RESTIC_CONF" "$RESTIC_PWD_FILE" "$OTHER_DBS_FILE" "$EXCLUDED_DIRS_FILE" "$OTHER_PGDBS_FILE"
     #Protect the script directory - prevent access from the web
     echo "Check .htaccess files content: "
     create_htaccess_file "$DIR_SCRIPT_BACKUP"
@@ -482,10 +484,9 @@ if [ "$1" = "--backup" ]; then
     restic backup $DIR_ROOT --repo $restic_repo -p $RESTIC_PWD_FILE $exclude_flags
     RESTIC_EXIT=$?
     # On the 15th of the month we clean snapshot older than 3 months and we prune the repo
-    if [ "$(date +%d)" -eq 15 ]; then
-      echo "Removing restic snapshot older than 3 months: "
-      # Remove snapshot older than 3 months
-      restic forget --keep-within-daily 90 --repo $restic_repo -p $RESTIC_PWD_FILE
+    if [ "$(date +%d)" -eq $restic_clean_day ]; then
+      echo "Removing restic snapshot older than $restic_keep_days days: "
+      restic forget --keep-within-daily $restic_keep_days --repo $restic_repo -p $RESTIC_PWD_FILE
       # Prune the repository
       restic prune --repo $restic_repo -p $RESTIC_PWD_FILE
     fi
