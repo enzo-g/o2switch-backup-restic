@@ -3,6 +3,8 @@
 * [Documentation in English.](README.MD)
 * [Documentation en français.](Readme-fr.MD) 
 
+# La doc n'est pas entierement en jour dans sa version française.
+
 ## Description du script<a name="description-du-script"></a>
 
 Ce script shell Bash a été conçu pour sauvegarder les données de votre site web et les bases de données MySQL de l'infrastructure [O2Switch](https://www.o2switch.fr/) vers un service cloud distant de votre choix.

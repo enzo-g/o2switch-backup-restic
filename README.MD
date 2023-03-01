@@ -199,6 +199,7 @@ The script will:
   * $HOME/scripts/backup/backup-restic-conf.txt
   * $HOME/scripts/backup/backup-excluded-dirs.txt
   * $HOME/scripts/backup/backup-db-others.txt
+  * $HOME/scripts/backup/backup-pgdb-others.txt
 * Download needed executables:
   * Download the latest version of restic from github and unzip it within the directory: $HOME/scripts/backup
   * Download the latest version of rclone from github and unzip it within the directory: $HOME/scripts/backup
@@ -221,9 +222,10 @@ Before diving into customizing the script behavior, it's worth noting that if yo
 
 That being said, if you do need to customize the script, you can modify the following files:
 
-* `backup-restic-conf.txt`: This file contains the restic command that is used to backup your selected repository.
+* `backup-restic-conf.txt`: This file contains multiple variables that can be edited to manage the script behavior.
 * `backup-restic-pwd.txt`: Here you have to enter the password for your restic repository.
 * `backup-db-others.txt`: In case you need to backup other MySQL databases besides the automatic backup of the WordPress database, you can add them to this file.
+* `backup-pgdb-others.txt`: In case you need to backup PosteGreSQL DB
 * `backup-excluded-dirs.txt`: If you want to exclude certain folders from the backup, you can add them to this file. 
    Some folders are already excluded by default. You can use at the root of your home directory, the command: `ls -dA .*/ | grep -Ev '^(\./|\.\./)$'` to obtain a list of all hidden folders at the root of your home directory. Most of these directories can be excluded from backup, and I recommend adding them to this file.
 

@@ -38,6 +38,8 @@ RESTIC_CONF="$DIR_SCRIPT_BACKUP/backup-restic-conf.txt"
 RESTIC_PWD_FILE="$DIR_SCRIPT_BACKUP/backup-restic-pwd.txt"
 # Define the file containing other databases to backup and usernames
 OTHER_DBS_FILE="$DIR_SCRIPT_BACKUP/backup-db-others.txt"
+# Define the file containing other databases to backup and usernames
+OTHER_PGDBS_FILE="$DIR_SCRIPT_BACKUP/backup-pgdb-others.txt"
 # Define the file containing the directories to exclude
 EXCLUDED_DIRS_FILE="$DIR_SCRIPT_BACKUP/backup-excluded-dirs.txt"
 # Add path of binary during script execution
@@ -162,7 +164,18 @@ function create_db_others_file() {
     "# mydb1;myuser1;mypassword1" \
     "# mydb2;myuser2;mypassword2" > "$OTHER_DBS_FILE"
   fi
-}
+} 
+
+function create_pgdb_others_file() {
+  # Check if the db-others file exists, if not create it with sample content
+  if [ ! -f "$OTHER_DBS_FILE" ]; then
+    echo "# This file is to backup PostGreSQL DB, add lines to this file in the following format:" \
+    "# dbname;username;password" \
+    "# Example:" \
+    "# mydb1;myuser1;mypassword1" \
+    "# mydb2;myuser2;mypassword2" > "$OTHER_PGDBS_FILE"
+  fi
+} 
 
 function create_file_exclude_directory (){
   # Create the excluded directories file if it doesn't exist
@@ -195,6 +208,8 @@ function create_restic_conf_files {
     echo '# Set the Restic repository' >> $RESTIC_CONF
     echo 'restic_repo="sftp:user_remoteserver@host_remoteserver.com:/home/user_remoteserver/restic"' >> $RESTIC_CONF
     echo '#restic_repo="rclone:example:O2switch/R1"' >> $RESTIC_CONF
+    echo '# Define restic repo' >> $RESTIC_CONF
+    echo 'restic_log_file=$(date +"%Y-%m-%d-%H-%M")"_backup.txt"' >> $RESTIC_CONF
     echo '# Define log file name' >> $RESTIC_CONF
     echo 'restic_log_file=$(date +"%Y-%m-%d-%H-%M")"_backup.txt"' >> $RESTIC_CONF
     echo '# Define how many days we keep the log files' >> $RESTIC_CONF
@@ -336,6 +351,41 @@ dump_mysql_dbs() {
   fi
 }
 
+dump_postgresql_dbs() {
+  local FILE="$1"
+  local NUM_DBS=0
+
+  echo "Search if specific PostGreSQL DB has been listed for backup:"
+
+  # Backup databases not related to WordPress installation
+  if [ -f "$FILE" ] && [ -s "$FILE" ]; then
+    NUM_DBS=$(grep -v "^#" "$FILE" | wc -l)
+    echo "$NUM_DBS DB to backup based on $FILE"
+
+    while read -r LINE; do
+      if [[ "$LINE" == \#* ]]; then
+        # Skip commented lines
+        continue
+      fi
+
+      DB_NAME=$(echo "$LINE" | cut -d ";" -f 1)
+      DB_USER=$(echo "$LINE" | cut -d ";" -f 2)
+      DB_PASSWORD=$(echo "$LINE" | cut -d ";" -f 3)
+
+      DATE=$(date +"%Y-%m-%d")
+      TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+      DUMP_FILE="${DB_NAME}_${DATE}_${TIMESTAMP}.sql"
+      if PGPASSWORD="$DB_PASSWORD" pg_dump --username="$DB_USER" --file="$DIR_DB_BACKUP/$DUMP_FILE" --format=custom "$DB_NAME"; then
+        echo "[✓] Dump succeed for: $DB_NAME"
+        gzip "$DIR_DB_BACKUP/$DUMP_FILE"
+      else
+        echo "[X] Dump failed for: $DB_NAME"
+      fi
+    done < "$FILE"
+  else
+    echo "[✓] No other PostGreSQL DB dump required based on: $FILE"
+  fi
+}
 
 # SCRIPT'S INSTALLATION
 #########################
@@ -351,6 +401,7 @@ if [ "$1" = "--install" ]; then
   install_restic
   install_rclone
   create_db_others_file
+  create_pgdb_others_file
   create_file_exclude_directory
   create_restic_conf_files
   if [ "$is_script_in_backup_dir" = false ]; then
@@ -416,6 +467,8 @@ if [ "$1" = "--backup" ]; then
     dump_wordpress_databases --root-dir=$DIR_WP --backup-dir=$DIR_DB_BACKUP
     #Dump other MySQL DB if any listed
     dump_mysql_dbs $OTHER_DBS_FILE
+    #Dump other PostreSQL DB if any listed
+    dump_postgresql_dbs $OTHER_PGDBS_FILE
     # Import the list of excluded directories to not backup.
     echo "Search for folders and files to exclude from backup."
     while read -r line; do
