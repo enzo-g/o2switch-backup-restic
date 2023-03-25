@@ -256,8 +256,3 @@ I'm excited to work on these features and make the script even better. As always
 * [Restic](https://github.com/restic/restic) for their marverlous software.
 * [Rclone](https://rclone.org/) for their astonishing softwares.
 * [Uprising](https://github.com/uprisingweb/o2switch-backup-all.sh). I got the idea of this current script when I was looking for an existing solution and found his script. I find his wordpress database backup solution especially elegant!
-
-License<a name="license"></a>
-----------
-
-[BSD 2-Clause License](https://opensource.org/licenses/BSD-2-Clause)
