@@ -1,7 +1,7 @@
 # O2Switch Backup with Restic
 
 * [Documentation in English.](README.MD)
-* [Documentation en français.](Readme-fr.MD) 
+* [Documentation en français.](README-fr.MD) 
 
 ## Script Description<a name="script-description"></a>
 
