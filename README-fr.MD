@@ -164,9 +164,7 @@ Maintenant, modifions les fichiers de configuration.
 * `backup-restic-conf.txt` : Si vous souhaitez conserver le comportement par défaut du script, ne modifiez que les champs 'restic_repo' et 'restic_receive_email'.
   * `restic_repo=` Doit être similaire à la commande que vous avez précédemment utilisée pour initialiser votre dépôt Restic. 
     * Exemple avec SFTP : sftp:user_remoteserver@host_remoteserver.com:/home/user_remoteserver/restic
-    * Exemple avec r
-
-clone : rclone:mymega:restic
+    * Exemple avec rclone : rclone:mymega:restic
   * `restic_receive_email` Définit l'adresse e-mail qui recevra les journaux.
   * `restic_log_file` Modifiez cette valeur si vous souhaitez donner un nom spécifique à votre fichier de journal.
   * `restic_log_days` Définit combien de jours conserver les fichiers de journal.
