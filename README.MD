@@ -95,7 +95,7 @@ Remember, this password is essential for several Restic tasks, so let's keep a c
 
 ### Step 3 - Prepare a remote repository to welcome your files.
 
-In any case, first execute the following command in your shell: `export PATH=$PATH:/home2/ufza5835/scripts/backup`
+In any case, first execute the following command in your shell: `export PATH=$PATH:~/scripts/backup`
 This command is allowing you to use the time of your session the executable "restic" and  "rclone" without typing their full path. (ex: $HOME/scripts/backup/./restic)
 
 #### 3.1 Example with SFTP
