@@ -33,9 +33,7 @@ La décision d'utiliser ce script pour sauvegarder vos données avec l'infrastru
 Clause de non-responsabilité<a name="disclaimer"></a>
 ------------------
 * Je ne suis pas affilié à [O2Switch](https://www.o2switch.fr/)
-* Ce script est fourni en l'état et sans aucune garantie. L'auteur n'est pas responsable des problèmes pouvant survenir lors de l'utilisation de ce script, y compris, mais sans s'y limiter, la perte de données, les plantages du système ou d'autres problèmes. Bien que ce script soit destiné à la sauvegarde de données, veuillez noter que les sauvegard
-
-es peuvent échouer pour diverses raisons, il est donc important de sauvegarder vos données avant d'exécuter le script. Utilisez-le à vos propres risques et assurez-vous de sauvegarder vos données avant d'exécuter le script.
+* Ce script est fourni en l'état et sans aucune garantie. L'auteur n'est pas responsable des problèmes pouvant survenir lors de l'utilisation de ce script, y compris, mais sans s'y limiter, la perte de données, les plantages du système ou d'autres problèmes. Bien que ce script soit destiné à la sauvegarde de données, veuillez noter que les sauvegardes peuvent échouer pour diverses raisons, il est donc important de sauvegarder vos données avant d'exécuter le script. Utilisez-le à vos propres risques et assurez-vous de sauvegarder vos données avant d'exécuter le script.
 * Si vous n'êtes pas sûr de la façon d'utiliser ce script ou si vous rencontrez des problèmes lors de son exécution, O2Switch propose Jetbackup comme solution de sauvegarde. Pour plus d'informations sur l'utilisation de Jetbackup, veuillez consulter leur [page FAQ](https://faq.o2switch.fr/hebergement-mutualise/tutoriels-cpanel/sauvegarde-jetbackup)
 
 Procédure : Explication rapide<a name="how-to-quick-explanation"></a>
