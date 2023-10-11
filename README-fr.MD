@@ -1,7 +1,7 @@
 # Sauvegarde O2Switch avec Restic
 
 * [Documentation en anglais.](README.MD)
-* [Documentation en français.](Readme-fr.MD) 
+* [Documentation en français.](README-fr.MD) 
 
 ## Description du script<a name="script-description"></a>
 
@@ -102,7 +102,7 @@ N'oubliez pas que ce mot de passe est essentiel pour plusieurs tâches Restic, d
 
 ### Étape 3 - Préparez un dépôt distant pour accueillir vos fichiers.
 
-Dans tous les cas, exécutez d'abord la commande suivante dans votre shell : `export PATH=$PATH:/home2/ufza5835/scripts/backup`
+Dans tous les cas, exécutez d'abord la commande suivante dans votre shell : `export PATH=$PATH:~/scripts/backup`
 Cette commande vous permet d'utiliser les exécutables "restic" et "rclone" pendant la durée de votre session sans avoir à taper leur chemin complet. (par exemple : $HOME/scripts/backup/./restic)
 
 #### 3.1 Exemple avec SFTP
