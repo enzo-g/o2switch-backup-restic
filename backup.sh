@@ -168,7 +168,7 @@ function create_db_others_file() {
 
 function create_pgdb_others_file() {
   # Check if the db-others file exists, if not create it with sample content
-  if [ ! -f "$OTHER_DBS_FILE" ]; then
+  if [ ! -f "$OTHER_PGDBS_FILE" ]; then
     echo "# This file is to backup PostGreSQL DB, add lines to this file in the following format:" \
     "# dbname;username;password" \
     "# Example:" \
