@@ -193,38 +193,55 @@ function create_file_exclude_directory (){
 
 function create_restic_conf_files {
   if [ -f "$RESTIC_CONF" ]; then
-    # Put all the content of the file in comment
-    sed -i 's/^/# /' $RESTIC_CONF
-    # Echo a message to ask the user to review the content of the file
-    echo '[!] File already exist: $RESTIC_CONF '
-    echo "[!] Your previous settings will be commented out"
-    echo '# Please review the previous settings before making changes:' >> $RESTIC_CONF
-    echo "# (Your previous settings are commented out)" >> $RESTIC_CONF
-    echo '# ' >> $RESTIC_CONF
-    echo "# $(date +"%Y-%m-%d %H:%M:%S") - Settings added by script" >> $RESTIC_CONF
-    echo '# ' >> $RESTIC_CONF
-  else
-    # Add new settings to the file
-    echo '# Set the Restic repository' >> $RESTIC_CONF
-    echo 'restic_repo="sftp:user_remoteserver@host_remoteserver.com:/home/user_remoteserver/restic"' >> $RESTIC_CONF
-    echo '#restic_repo="rclone:example:O2switch/R1"' >> $RESTIC_CONF
-    echo '# Define how many days of backup restic should preserve' >> $RESTIC_CONF
-    echo 'restic_keep_days=90d' >> $RESTIC_CONF
-    echo '# Define which day of the month, restic should clean the backup repository' >> $RESTIC_CONF
-    echo 'restic_clean_day=15' >> $RESTIC_CONF
-    echo '# Define log file name' >> $RESTIC_CONF
-    echo 'restic_log_file=$(date +"%Y-%m-%d-%H-%M")"_backup.txt"' >> $RESTIC_CONF
-    echo '# Define how many days we keep the log files' >> $RESTIC_CONF
-    echo 'restic_log_days=90' >> $RESTIC_CONF
-    echo '# Define how many days we keep the MySQL dump' >> $RESTIC_CONF
-    echo 'restic_dump_days=15' >> $RESTIC_CONF
-    echo '# DEFINE RECEIVER EMAIL' >> $RESTIC_CONF
-    echo 'restic_receive_email="user@example.com"' >> $RESTIC_CONF
+    # Ask the user if they want to alter the current conf file
+    echo "Do you want to alter the current conf file? (y/n): "
+    echo "[Note: If you say 'yes', the current conf and password files will be backed up. If 'no', the process will be stopped.]"
+    read -r RESPONSE
+    if [ "$RESPONSE" = "y" ]; then
+      # Backup the current conf file with current date and hour
+      cp "$RESTIC_CONF" "${RESTIC_CONF}_$(date +"%Y-%m-%d-%H-%M").backup"
+      if [ $? -ne 0 ]; then
+        echo "Error while backing up the conf file. Exiting..."
+        exit 1
+      fi
+      echo "[!] Backup of the previous settings saved to: ${RESTIC_CONF}_$(date +"%Y-%m-%d-%H-%M").backup"
+
+      # Backup the password file
+      if [ -f "$RESTIC_PWD_FILE" ]; then
+        cp "$RESTIC_PWD_FILE" "${RESTIC_PWD_FILE}_$(date +"%Y-%m-%d-%H-%M").backup"
+        if [ $? -ne 0 ]; then
+          echo "Error while backing up the password file. Exiting..."
+          exit 1
+        fi
+        echo "[!] Backup of the previous password saved to: ${RESTIC_PWD_FILE}_$(date +"%Y-%m-%d-%H-%M").backup"
+      fi
+    else
+      echo "Exiting the script as per your choice."
+      exit 1
+    fi
   fi
-  # Create the Restic password file if it doesn't exist and add sample content
+
+  # Overwrite the settings in the conf file
+  echo '# Set the Restic repository' > "$RESTIC_CONF"
+  echo 'restic_repo="sftp:user_remoteserver@host_remoteserver.com:/home/user_remoteserver/restic"' >> "$RESTIC_CONF"
+  echo '#restic_repo="rclone:example:O2switch/R1"' >> "$RESTIC_CONF"
+  echo '# Define how many days of backup restic should preserve' >> "$RESTIC_CONF"
+  echo 'restic_keep_days=90d' >> "$RESTIC_CONF"
+  echo '# Define which day of the month, restic should clean the backup repository' >> "$RESTIC_CONF"
+  echo 'restic_clean_day=15' >> "$RESTIC_CONF"
+  echo '# Define log file name' >> "$RESTIC_CONF"
+  echo 'restic_log_file=$(date +"%Y-%m-%d-%H-%M")"_backup.txt"' >> "$RESTIC_CONF"
+  echo '# Define how many days we keep the log files' >> "$RESTIC_CONF"
+  echo 'restic_log_days=90' >> "$RESTIC_CONF"
+  echo '# Define how many days we keep the MySQL dump' >> "$RESTIC_CONF"
+  echo 'restic_dump_days=15' >> "$RESTIC_CONF"
+  echo '# DEFINE RECEIVER EMAIL' >> "$RESTIC_CONF"
+  echo 'restic_receive_email="user@example.com"' >> "$RESTIC_CONF"
+  
+  # If the password file does not exist, create it
   if [ ! -f "$RESTIC_PWD_FILE" ]; then
     echo "INPUT_YOUR_RESTIC_REPO_PASSWORD_HERE" > "$RESTIC_PWD_FILE"
-    echo "Restic password file created at $RESTIC_PWD_FILE, edit it before to launch the backup script again"
+    echo "Restic password file created at $RESTIC_PWD_FILE, edit it before launching the backup script again"
     exit 1
   fi
 }
