@@ -1,5 +1,6 @@
-#!/bin/bash
-
+#HELP
+###########
+# The sequence below is executed if the --help argument is being used.
 echo "Usage: backup.sh [OPTIONS]"
 echo
 echo "This script provides backup and installation utilities."
