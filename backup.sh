@@ -56,15 +56,15 @@ done
 case "$1" in
   --backup)
     # Execute the backup_action.sh script
-    . "$DIR_SCRIPT_ACTIONS/action_backup.sh"
+    source "$DIR_SCRIPT_ACTIONS/action_backup.sh"
     ;;
   --install)
     # Execute the install_action.sh script
-    . "$DIR_SCRIPT_ACTIONS/action_install.sh"
+    source "$DIR_SCRIPT_ACTIONS/action_install.sh"
     ;;
   --help)
     # Display the help message
-    . "$DIR_SCRIPT_ACTIONS/action_help.sh"
+    source "$DIR_SCRIPT_ACTIONS/action_help.sh"
     ;;
   *)
     echo "Error: Invalid argument. Must be '--backup', '--install', or '--help'"
