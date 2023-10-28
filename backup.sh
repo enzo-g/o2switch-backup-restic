@@ -4,18 +4,21 @@
 # VARIABLES 
 #############
 
+# Determine the directory from where the backup.sh script is executed
+DIR_SCRIPT_BACKUPSH="$(dirname "$(realpath "$0")")"
+
 # Define the root directory
 DIR_ROOT="$HOME"
-# Define the directory of your wordpress installations - default is $HOME
+# Define the directory of your WordPress installations - default is $HOME
 DIR_WP="$DIR_ROOT"
+
+# Based on DIR_SCRIPT_BACKUPSH, derive other directories
+DIR_SCRIPT_BACKUP="$(dirname "$DIR_SCRIPT_BACKUPSH")"
+DIR_SCRIPTS="$(dirname "$DIR_SCRIPT_BACKUP")"
+
 # Define the directory to store database dump
 DIR_DB_BACKUP="$DIR_ROOT/backup-db"
-# Define the path of the scripts directory
-DIR_SCRIPTS="$DIR_ROOT/scripts"
-# Define the path to the script backup directory
-DIR_SCRIPT_BACKUP="$DIR_SCRIPTS/backup"
-# Define the path to the script backupSH
-DIR_SCRIPT_BACKUPSH="$DIR_SCRIPT_BACKUP/backup"
+
 # Define the directory to store logs
 DIR_SCRIPT_LOGS="$DIR_SCRIPT_BACKUP/logs"
 # Define the directory of the action script
@@ -30,7 +33,7 @@ DIR_SCRIPT_CONFIGS="$DIR_SCRIPT_BACKUP/configs"
 RCLONE_BIN="$DIR_SCRIPT_BINARIES/rclone"
 # Define the path to the Restic binary
 RESTIC_BIN="$DIR_SCRIPT_BINARIES/restic"
-#Define the path of restic configuration
+# Define the path of restic configuration
 RESTIC_CONF="$DIR_SCRIPT_CONFIGS/backup-restic-conf.txt"
 # Set the path to the Restic password file
 RESTIC_PWD_FILE="$DIR_SCRIPT_CONFIGS/backup-restic-pwd.txt"
@@ -40,6 +43,7 @@ OTHER_DBS_FILE="$DIR_SCRIPT_CONFIGS/backup-db-others.txt"
 OTHER_PGDBS_FILE="$DIR_SCRIPT_CONFIGS/backup-pgdb-others.txt"
 # Define the file containing the directories to exclude
 EXCLUDED_DIRS_FILE="$DIR_SCRIPT_CONFIGS/backup-excluded-dirs.txt"
+
 # Add path of binary during script execution
 export PATH=$PATH:$DIR_SCRIPT_BINARIES
 
