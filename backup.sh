@@ -1,46 +1,56 @@
 #!/bin/bash
-# GitHub source: https://github.com/enzo-g/o2switch-backup-restic
 
 # VARIABLES 
 #############
 
-# Determine the directory from where the backup.sh script is executed
-DIR_SCRIPT_BACKUPSH="$(dirname "$(realpath "$0")")"
+# Get the directory of the currently executing script
+DIR_SCRIPT="$(dirname "$(readlink -f "$0")")"
 
 # Define the root directory
 DIR_ROOT="$HOME"
-# Define the directory of your WordPress installations - default is $HOME
-DIR_WP="$DIR_ROOT"
 
-# Based on DIR_SCRIPT_BACKUPSH, derive other directories
-DIR_SCRIPT_BACKUP="$(dirname "$DIR_SCRIPT_BACKUPSH")"
-DIR_SCRIPTS="$(dirname "$DIR_SCRIPT_BACKUP")"
+# Define the installation directory for the scripts
+DIR_INSTALLATION="$HOME/scripts/backup"
+
+# Define the directory of your wordpress installations - default is $HOME
+DIR_WP="$DIR_ROOT"
 
 # Define the directory to store database dump
 DIR_DB_BACKUP="$DIR_ROOT/backup-db"
 
+# Define the directory of the action script relative to the executing script
+DIR_SCRIPT_ACTIONS="$DIR_SCRIPT/actions"
+
+# Define the directory of the functions relative to the executing script
+DIR_SCRIPT_MODULES="$DIR_SCRIPT/modules"
+
 # Define the directory to store logs
-DIR_SCRIPT_LOGS="$DIR_SCRIPT_BACKUP/logs"
-# Define the directory of the action script
-DIR_SCRIPT_ACTIONS="$DIR_SCRIPT_BACKUP/actions"
-# Define the directory of the functions
-DIR_SCRIPT_MODULES="$DIR_SCRIPT_BACKUP/modules"
-# Define the directory of the binaries
-DIR_SCRIPT_BINARIES="$DIR_SCRIPT_BACKUP/binaries"
+DIR_SCRIPT_LOGS="$DIR_INSTALLATION/logs"
+
+# Define the directory of the binaries (assuming the binaries are within the 'backup' directory in the repo)
+DIR_SCRIPT_BINARIES="$DIR_INSTALLATION/binaries"
+
 # Define the directory of the config files
-DIR_SCRIPT_CONFIGS="$DIR_SCRIPT_BACKUP/configs"
+DIR_SCRIPT_CONFIGS="$DIR_INSTALLATION/configs"
+
 # Define the path to the Rclone binary
 RCLONE_BIN="$DIR_SCRIPT_BINARIES/rclone"
+
 # Define the path to the Restic binary
 RESTIC_BIN="$DIR_SCRIPT_BINARIES/restic"
+
 # Define the path of restic configuration
 RESTIC_CONF="$DIR_SCRIPT_CONFIGS/backup-restic-conf.txt"
+
 # Set the path to the Restic password file
 RESTIC_PWD_FILE="$DIR_SCRIPT_CONFIGS/backup-restic-pwd.txt"
+
 # Define the file containing other databases to backup and usernames
 OTHER_DBS_FILE="$DIR_SCRIPT_CONFIGS/backup-db-others.txt"
+
 # Define the file containing other databases to backup and usernames
 OTHER_PGDBS_FILE="$DIR_SCRIPT_CONFIGS/backup-pgdb-others.txt"
+
 # Define the file containing the directories to exclude
 EXCLUDED_DIRS_FILE="$DIR_SCRIPT_CONFIGS/backup-excluded-dirs.txt"
 
@@ -57,7 +67,7 @@ for module in "$DIR_SCRIPT_MODULES"/*.sh; do
     fi
 done
 
-#Script execution
+# Script execution
 # Handle the provided arguments
 case "$1" in
   --backup)
