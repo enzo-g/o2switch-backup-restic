@@ -11,17 +11,17 @@ check_and_backup_existing_files() {
     if [ $BACKUP_NEEDED -eq 1 ]; then
         echo ""
         echo "It seems you might have installed the script before."
-        echo "Do you want to continue? If you do, the current content of $DIR_SCRIPT_BACKUP will be copy to a new location."
+        echo "Do you want to continue? If you do, the current content of $DIR_INSTALLATION will be copy to a new location."
         echo -n "Continue? (y/n): "
         read -r RESPONSE
 
         if [ "$RESPONSE" = "y" ]; then
             # Determine the backup directory name
-            BACKUP_DIR="$DIR_SCRIPTS/backup_$(date +"%Y-%m-%d_%H-%M")"
+            BACKUP_DIR="$DIR_INSTALLATION_scripts/backup_$(date +"%Y-%m-%d_%H-%M")"
             echo "[*] Creating backup directory: $BACKUP_DIR..."
 
-            # Copy the current backup directory to the new backup directory
-            cp -r "$DIR_SCRIPT_BACKUP" "$BACKUP_DIR"
+            # Copy the current script install to a new backup directory
+            cp -r "$DIR_INSTALLATION" "$BACKUP_DIR"
             
             if [ $? -eq 0 ]; then
                 echo "[✓] Backup successful! Directory saved to: $BACKUP_DIR"
