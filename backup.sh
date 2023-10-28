@@ -5,55 +5,40 @@
 
 # Get the directory of the currently executing script
 DIR_SCRIPT="$(dirname "$(readlink -f "$0")")"
-
 # Define the root directory
 DIR_ROOT="$HOME"
-
-# Define the installation directory for the scripts
+# Define the installation directory for the scripts in general
+DIR_INSTALLATION_scripts="$HOME/scripts"
+# Define the installation directory for the script backup
 DIR_INSTALLATION="$HOME/scripts/backup"
-
 # Define the directory of your wordpress installations - default is $HOME
 DIR_WP="$DIR_ROOT"
-
 # Define the directory to store database dump
 DIR_DB_BACKUP="$DIR_ROOT/backup-db"
-
 # Define the directory of the action script relative to the executing script
 DIR_SCRIPT_ACTIONS="$DIR_SCRIPT/actions"
-
 # Define the directory of the functions relative to the executing script
 DIR_SCRIPT_MODULES="$DIR_SCRIPT/modules"
-
 # Define the directory to store logs
 DIR_SCRIPT_LOGS="$DIR_INSTALLATION/logs"
-
 # Define the directory of the binaries (assuming the binaries are within the 'backup' directory in the repo)
 DIR_SCRIPT_BINARIES="$DIR_INSTALLATION/binaries"
-
 # Define the directory of the config files
 DIR_SCRIPT_CONFIGS="$DIR_INSTALLATION/configs"
-
 # Define the path to the Rclone binary
 RCLONE_BIN="$DIR_SCRIPT_BINARIES/rclone"
-
 # Define the path to the Restic binary
 RESTIC_BIN="$DIR_SCRIPT_BINARIES/restic"
-
 # Define the path of restic configuration
 RESTIC_CONF="$DIR_SCRIPT_CONFIGS/backup-restic-conf.txt"
-
 # Set the path to the Restic password file
 RESTIC_PWD_FILE="$DIR_SCRIPT_CONFIGS/backup-restic-pwd.txt"
-
 # Define the file containing other databases to backup and usernames
 OTHER_DBS_FILE="$DIR_SCRIPT_CONFIGS/backup-db-others.txt"
-
 # Define the file containing other databases to backup and usernames
 OTHER_PGDBS_FILE="$DIR_SCRIPT_CONFIGS/backup-pgdb-others.txt"
-
 # Define the file containing the directories to exclude
 EXCLUDED_DIRS_FILE="$DIR_SCRIPT_CONFIGS/backup-excluded-dirs.txt"
-
 # Add path of binary during script execution
 export PATH=$PATH:$DIR_SCRIPT_BINARIES
 
