@@ -25,6 +25,7 @@ check_and_backup_existing_files() {
             
             if [ $? -eq 0 ]; then
                 echo "[✓] Backup successful! Directory saved to: $BACKUP_DIR"
+                rm -rf $DIR_INSTALLATION
             else
                 echo "[X] Error: Failed to create backup directory."
                 exit 1
