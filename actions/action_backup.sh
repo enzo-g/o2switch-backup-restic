@@ -18,8 +18,7 @@ my_date=$(date +"%Y-%m-%d %H:%M")
 echo "Backup script is now starting -  $my_date"
 # Call the check_script_location function
 echo "Check script location:"
-is_script_in_backup_dir
-if [ "$is_script_in_backup_dir" = true ]; then
+if [ "$(check_script_location "$DIR_INSTALLATION")" = "true" ]; then
     echo "[✓] Script located in: $DIR_SCRIPT_BACKUP"
 else
     echo "[X] Script have to be executed from: $DIR_SCRIPT_BACKUP"

@@ -1,8 +1,16 @@
-function is_script_in_backup_dir() {
-  # Check if the script is located in the backup directory "$DIR_SCRIPT_BACKUP"
-  if [ "$(dirname "$(realpath "$0")")" = "$DIR_SCRIPT_BACKUP" ]; then
-    is_script_in_backup_dir=true
+function check_script_location() {
+  local expected_dir="$1"
+  # The directory of the parent script (backup.sh) will be in the calling context's $0
+  if [ "$(dirname "$(realpath "${BASH_SOURCE[1]}")")" = "$expected_dir" ]; then
+    echo true
   else
-    is_script_in_backup_dir=false
+    echo false
   fi
 }
+
+# Usage:
+# if [ "$(check_script_location "$DIR_INSTALLATION")" = "true" ]; then
+#   echo "Backup script is in the expected directory"
+# else
+#   echo "Backup script is NOT in the expected directory"
+# fi
