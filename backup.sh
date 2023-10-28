@@ -15,7 +15,7 @@ DIR_SCRIPTS="$DIR_ROOT/scripts"
 # Define the path to the script backup directory
 DIR_SCRIPT_BACKUP="$DIR_SCRIPTS/backup"
 # Define the path to the script backupSH
-DIR_SCRIPT_BACKUPSH="$DIR_SCRIPT_BACKUP/backup.sh"
+DIR_SCRIPT_BACKUPSH="$DIR_SCRIPT_BACKUP/backup"
 # Define the directory to store logs
 DIR_SCRIPT_LOGS="$DIR_SCRIPT_BACKUP/logs"
 # Define the directory of the action script

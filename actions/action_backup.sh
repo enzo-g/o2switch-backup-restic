@@ -1,6 +1,7 @@
 #BACKUP
 ###########
 # The sequence below is executed if the --backup argument is being used.
+
 echo "Load variables from: $RESTIC_CONF"
 if [ -f "$RESTIC_CONF" ]; then
   echo "[✓] Restic configuration file found: $RESTIC_CONF"
@@ -10,16 +11,6 @@ else
   echo "[!] Have you run backup.sh --install previously?"
   exit 1
 fi
-
-RESTIC_CONF_REPO=$restic_repo
-#Define log file name
-LOG_FILE=$restic_log_file
-#Define how many days we keep the log files
-LOG_DAYS_TO_KEEP=$restic_log_days
-#Define how many days we keep the MySQL dump in the folder
-DUMP_DAYS=$restic_dump_days
-#DEFINE EMAIL
-EMAIL=$restic_receive_email
 
 # Redirect all output to the log file and the terminal    
 {
@@ -41,8 +32,7 @@ echo "Check if all files needed are present:"
 check_required_files  "$RESTIC_BIN" "$RCLONE_BIN" "$RESTIC_CONF" "$RESTIC_PWD_FILE" "$OTHER_DBS_FILE" "$EXCLUDED_DIRS_FILE" "$OTHER_PGDBS_FILE"
 #Protect the script directory - prevent access from the web
 echo "Check .htaccess files content: "
-create_htaccess_file "$DIR_SCRIPT_BACKUP"
-create_htaccess_file "$DIR_DB_BACKUP"
+create_htaccess_file "$DIR_SCRIPT_BACKUP" "$DIR_DB_BACKUP" 
 
 #Dump WP DB 
 dump_wordpress_databases --root-dir=$DIR_WP --backup-dir=$DIR_DB_BACKUP
@@ -69,29 +59,29 @@ if [ "$(date +%d)" -eq $restic_clean_day ]; then
   # Prune the repository
   restic prune --repo $restic_repo -p $RESTIC_PWD_FILE
 fi
-# Clean up old database backup files within the folder $DIR_DB_BACKUP (that's not deleting them directly from restic repo)
-delete_old_dumps
 #Cleanup old log files
-delete_old_logs
-echo "Log file: $DIR_SCRIPT_LOGS/$LOG_FILE"
+delete_old_logs "$DIR_SCRIPT_LOGS" "$LOG_DAYS_TO_KEEP"
+# Clean up old database backup files within the folder $DIR_DB_BACKUP
+delete_old_dumps "$DIR_DB_BACKUP" "$DUMP_DAYS"
+echo "Log file: $DIR_SCRIPT_LOGS/$restic_log_file"
 echo "Sending the log file by email."
 case $RESTIC_EXIT in
   0)
-    RESTIC_EXIT_SBJ="O2Switch backup succeed: $LOG_FILE"
+    RESTIC_EXIT_SBJ="O2Switch backup succeed: $restic_log_file"
     RESTIC_EXIT_MSG="Hi! Restic snapshot created successfully!"
     ;;
   1)
-    RESTIC_EXIT_SBJ="O2Switch backup failed: $LOG_FILE"
+    RESTIC_EXIT_SBJ="O2Switch backup failed: $restic_log_file"
     RESTIC_EXIT_MSG="Hi! Fatal error: no snapshot created"
     ;;
   3)
-    RESTIC_EXIT_SBJ="O2Switch backup incomplete: $LOG_FILE"
+    RESTIC_EXIT_SBJ="O2Switch backup incomplete: $restic_log_file"
     RESTIC_EXIT_MSG="Hi! Incomplete snapshot created: some source data could not be read"
     ;;
   *)
-    RESTIC_EXIT_SBJ="O2Switch backup error: $LOG_FILE"
+    RESTIC_EXIT_SBJ="O2Switch backup error: $restic_log_file"
     RESTIC_EXIT_MSG="Hi! Unknown error occurred"
     ;;
 esac
-echo $RESTIC_EXIT_MSG | mailx -s "$RESTIC_EXIT_SBJ" -a "$DIR_SCRIPT_LOGS/$LOG_FILE" $EMAIL 
-} 2>&1 | tee -- "$DIR_SCRIPT_LOGS/$LOG_FILE"
+echo $RESTIC_EXIT_MSG | mailx -s "$RESTIC_EXIT_SBJ" -a "$DIR_SCRIPT_LOGS/$restic_log_file" $restic_receive_email 
+} 2>&1 | tee -- "$DIR_SCRIPT_LOGS/$restic_log_file"

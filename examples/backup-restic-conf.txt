@@ -1,0 +1,15 @@
+# Set the Restic repository
+restic_repo="sftp:user_remoteserver@host_remoteserver.com:/home/user_remoteserver/restic"
+#restic_repo="rclone:example:O2switch/R1"
+# Define how many days of backup restic should preserve
+restic_keep_days=90d
+# Define which day of the month, restic should clean the backup repository
+restic_clean_day=15
+# Define log file name
+restic_log_file=$(date +"%Y-%m-%d-%H-%M")"_backup.txt"
+# Define how many days we keep the log files
+restic_log_days=90
+# Define how many days we keep the MySQL dump
+restic_dump_days=15
+# DEFINE RECEIVER EMAIL
+restic_receive_email="user@example.com"
