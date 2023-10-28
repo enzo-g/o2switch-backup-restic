@@ -18,11 +18,12 @@ my_date=$(date +"%Y-%m-%d %H:%M")
 echo "Backup script is now starting -  $my_date"
 # Call the check_script_location function
 echo "Check script location:"
-if [ "$(check_script_location "$DIR_INSTALLATION")" = "true" ]; then
-    echo "[✓] Script located in: $DIR_SCRIPT_BACKUP"
-else
-    echo "[X] Script have to be executed from: $DIR_SCRIPT_BACKUP"
+
+if [ "$(dirname "$(realpath "$0")")" != "$DIR_INSTALLATION" ]; then
+    echo "[X] Script must be executed from: $DIR_INSTALLATION"
     exit 1
+else
+    echo "[✓] Script is being executed from the expected location."
 fi
 
 echo "Check if all directories needed are present:"
@@ -31,7 +32,7 @@ echo "Check if all files needed are present:"
 check_required_files  "$RESTIC_BIN" "$RCLONE_BIN" "$RESTIC_CONF" "$RESTIC_PWD_FILE" "$OTHER_DBS_FILE" "$EXCLUDED_DIRS_FILE" "$OTHER_PGDBS_FILE"
 #Protect the script directory - prevent access from the web
 echo "Check .htaccess files content: "
-create_htaccess_file "$DIR_SCRIPT_BACKUP" "$DIR_DB_BACKUP" 
+create_htaccess_file "$DIR_INSTALLATION" "$DIR_DB_BACKUP" 
 
 #Dump WP DB 
 dump_wordpress_databases --root-dir=$DIR_WP --backup-dir=$DIR_DB_BACKUP
@@ -59,9 +60,9 @@ if [ "$(date +%d)" -eq $restic_clean_day ]; then
   restic prune --repo $restic_repo -p $RESTIC_PWD_FILE
 fi
 #Cleanup old log files
-delete_old_logs "$DIR_SCRIPT_LOGS" "$LOG_DAYS_TO_KEEP"
+delete_old_logs "$DIR_SCRIPT_LOGS" "$restic_log_days"
 # Clean up old database backup files within the folder $DIR_DB_BACKUP
-delete_old_dumps "$DIR_DB_BACKUP" "$DUMP_DAYS"
+delete_old_dumps "$DIR_DB_BACKUP" "$restic_dump_days"
 echo "Log file: $DIR_SCRIPT_LOGS/$restic_log_file"
 echo "Sending the log file by email."
 case $RESTIC_EXIT in
