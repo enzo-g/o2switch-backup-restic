@@ -16,7 +16,7 @@ RESTIC_CONF_REPO=$restic_repo
 LOG_FILE=$restic_log_file
 #Define how many days we keep the log files
 LOG_DAYS_TO_KEEP=$restic_log_days
-#Define how many days we keep the MySQL dump - Not related to restic backup.
+#Define how many days we keep the MySQL dump in the folder
 DUMP_DAYS=$restic_dump_days
 #DEFINE EMAIL
 EMAIL=$restic_receive_email
