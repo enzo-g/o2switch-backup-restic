@@ -30,15 +30,15 @@ RCLONE_BIN="$DIR_SCRIPT_BINARIES/rclone"
 # Define the path to the Restic binary
 RESTIC_BIN="$DIR_SCRIPT_BINARIES/restic"
 # Define the path of restic configuration
-RESTIC_CONF="$DIR_SCRIPT_CONFIGS/backup-restic-conf.txt"
+RESTIC_CONF="$DIR_SCRIPT_CONFIGS/backup-restic-conf.conf"
 # Set the path to the Restic password file
-RESTIC_PWD_FILE="$DIR_SCRIPT_CONFIGS/backup-restic-pwd.txt"
+RESTIC_PWD_FILE="$DIR_SCRIPT_CONFIGS/backup-restic-pwd.conf"
 # Define the file containing other databases to backup and usernames
-OTHER_DBS_FILE="$DIR_SCRIPT_CONFIGS/backup-db-others.txt"
+OTHER_DBS_FILE="$DIR_SCRIPT_CONFIGS/backup-db-others.conf"
 # Define the file containing other databases to backup and usernames
-OTHER_PGDBS_FILE="$DIR_SCRIPT_CONFIGS/backup-pgdb-others.txt"
+OTHER_PGDBS_FILE="$DIR_SCRIPT_CONFIGS/backup-pgdb-others.conf"
 # Define the file containing the directories to exclude
-EXCLUDED_DIRS_FILE="$DIR_SCRIPT_CONFIGS/backup-excluded-dirs.txt"
+EXCLUDED_DIRS_FILE="$DIR_SCRIPT_CONFIGS/backup-excluded-dirs.conf"
 # Add path of binary during script execution
 export PATH=$PATH:$DIR_SCRIPT_BINARIES
 
