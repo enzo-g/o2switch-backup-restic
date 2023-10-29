@@ -55,6 +55,10 @@ done
 # Script execution
 # Handle the provided arguments
 case "$1" in
+  --restore)
+    # Execute the backup_action.sh script
+    source "$DIR_SCRIPT_ACTIONS/action_restore.sh"
+    ;;
   --backup)
     # Execute the backup_action.sh script
     source "$DIR_SCRIPT_ACTIONS/action_backup.sh"
@@ -68,7 +72,7 @@ case "$1" in
     source "$DIR_SCRIPT_ACTIONS/action_help.sh"
     ;;
   *)
-    echo "Error: Invalid argument. Must be '--backup', '--install', or '--help'"
+    echo "Error: Invalid argument. Must be '--backup', '--install', or '--help', or '--restore'"
     exit 1
     ;;
 esac

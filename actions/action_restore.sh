@@ -1,6 +1,15 @@
 # RESTORE
 ###########
 # The sequence below is executed if the --restore argument is being used.
+echo "Load variables from: $RESTIC_CONF"
+if [ -f "$RESTIC_CONF" ]; then
+  source "$RESTIC_CONF"
+else
+  echo "[X] Restic configuration file not found: $RESTIC_CONF"
+  echo "[!] Have you run backup.sh --install previously?"
+  exit 1
+fi
+
 while true; do
     clear
     echo "Welcome to the interactive restoration menu"
@@ -17,6 +26,7 @@ while true; do
     case $choice in
         1)
             restic -r $restic_repo -p $RESTIC_PWD_FILE snapshots
+            echo "Note the snapshot ID you wish to work with (e.g. faf918cf)"
             ;;
         
         2)
@@ -32,18 +42,18 @@ while true; do
             target_dir="/tmp/restore-${snap_id}-$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 4)"
             mkdir -p $target_dir
 
-            log_file="$target_dir/restore.log"  # log file path
+            log_file="$target_dir/restore.json"  # log file path
 
             if [ -z "$path" ]; then
-                restic -r $restic_repo -p $RESTIC_PWD_FILE restore $snap_id --target $target_dir > $log_file 2>&1 &
+                restic -r $restic_repo -p $RESTIC_PWD_FILE restore $snap_id --target $target_dir --json > $log_file 2>&1 &
             else
                 echo "Would you also like to restore the database backup located in $HOME/backup-db? [y/N]"
                 read -p "> " db_choice
 
                 if [ "$db_choice" == "y" ] || [ "$db_choice" == "Y" ]; then
-                    restic -r $restic_repo -p $RESTIC_PWD_FILE restore $snap_id --target $target_dir --include "$path" --include "$HOME/backup-db" > $log_file 2>&1 &
+                    restic -r $restic_repo -p $RESTIC_PWD_FILE restore $snap_id --target $target_dir --include "$path" --include "$HOME/backup-db" --json > $log_file 2>&1 &
                 else
-                    restic -r $restic_repo -p $RESTIC_PWD_FILE restore $snap_id --target $target_dir --include "$path" > $log_file 2>&1 &
+                    restic -r $restic_repo -p $RESTIC_PWD_FILE restore $snap_id --target $target_dir --include "$path" --json > $log_file 2>&1 &
                 fi
             fi
             echo "Restoration started in the background to $target_dir. Monitor the progress by checking $log_file."
@@ -51,20 +61,27 @@ while true; do
 
         4)
             # Monitoring ongoing restoration
-            local pgrep_output=$(pgrep -af "restic.*restore")
-            
+            pgrep_output=$(pgrep -af "restic.*restore")
+                
             if [ -z "$pgrep_output" ]; then
                 echo "No ongoing restoration found"
             else
                 # Extract the target_dir based on your command structure
-                local target_dir=$(echo $pgrep_output | awk -F'--target ' '{print $2}' | awk '{print $1}')
+                target_dir=$(echo $pgrep_output | awk -F'--target ' '{print $2}' | awk '{print $1}')
 
-                echo "Ongoing restoration to: $target_dir"
-                echo "Contents of the restore.log file:"
-                echo "---------------------------------"
-                if [ -f "$target_dir/restore.log" ]; then
-                    cat "$target_dir/restore.log"
+                if [ -f "$target_dir/restore.json" ]; then
+                    status_line=$(tail -n 1 "$target_dir/restore.json")  # Get the last line from the log, assuming it has the most recent status.
+                    
+                    # Extract percentage done from the status_line
+                    percent_done=$(echo $status_line | sed -n 's/.*"percent_done":\([^,]*\),.*/\1/p')
+                    
+                    # Convert percentage to a readable format (multiply by 100)
+                    percent_done=$(awk "BEGIN {print $percent_done * 100}")
+                    
+                    echo "Ongoing restoration to: $target_dir"
+                    echo "Restoration Status: $percent_done% completed"
                 else
+                    echo "Ongoing restoration to: $target_dir"
                     echo "No log file found in $target_dir"
                 fi
                 echo "---------------------------------"
@@ -72,23 +89,32 @@ while true; do
             ;;
 
         5)
-            local process_id=$(pgrep -f "restic.*restore")
+            pgrep_output=$(pgrep -af "restic.*restore")
 
-            if [ -z "$process_id" ]; then
+            if [ -z "$pgrep_output" ]; then
                 echo "No ongoing restoration found"
             else
-                local target_dir=$(echo $pgrep_output | awk -F'--target ' '{print $2}' | awk '{print $1}')
-                
-                echo "Ongoing restoration to: $target_dir"
-                echo "Contents of the restore.log file:"
-                echo "---------------------------------"
-                if [ -f "$target_dir/restore.log" ]; then
-                    cat "$target_dir/restore.log"
+                # Extract the target_dir based on your command structure
+                target_dir=$(echo $pgrep_output | awk -F'--target ' '{print $2}' | awk '{print $1}')
+
+                if [ -f "$target_dir/restore.json" ]; then
+                    status_line=$(tail -n 1 "$target_dir/restore.json")  # Get the last line from the log, assuming it has the most recent status.
+
+                    # Extract percentage done from the status_line
+                    percent_done=$(echo $status_line | sed -n 's/.*"percent_done":\([^,]*\),.*/\1/p')
+
+                    # Convert percentage to a readable format (multiply by 100)
+                    percent_done=$(awk "BEGIN {print $percent_done * 100}")
+
+                    echo "Ongoing restoration to: $target_dir"
+                    echo "Restoration Status: $percent_done% completed"
                 else
+                    echo "Ongoing restoration to: $target_dir"
                     echo "No log file found in $target_dir"
                 fi
                 echo "---------------------------------"
 
+                process_id=$(pgrep -f "restic.*restore")
                 read -p "Do you wish to kill the ongoing restoration process? [y/N] " choice
                 if [ "$choice" == "y" ] || [ "$choice" == "Y" ]; then
                     kill $process_id

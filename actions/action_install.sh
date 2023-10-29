@@ -10,7 +10,7 @@ install_rclone
 create_db_others_file
 create_pgdb_others_file
 create_file_exclude_directory
-create_restic_conf_files
+create_restic_conf_file
 create_restic_pwd_file
 
 if [ "$(check_script_location "$DIR_INSTALLATION")" = "false" ]; then
