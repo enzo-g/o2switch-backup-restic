@@ -160,7 +160,8 @@ Now let's edit the configuration files.
   * `restic_log_file` Edit that value if you want to give a specific name to your log's file.
   * `restic_log_days` Define how many days to keep the log's files.
   * `restic_dump_days` Define how many days to keep the MySQL dumps.
-  * `restic_dump_days` Define how many days to keep the MySQL dumps.
+  * `restic_wp_backup_enable` Enable or Disable automatic backup of all WordPress databases. Set to true to enable, false to disable.
+
 * `backup-db-others.conf`: Edit that file if you want to add specific databases not related to a wordpress installation and that you want to backup.
   * You will need to create an user and to grant him the following permission for those DBs only: `SELECT / LOCK TABLES / SHOW VIEW`
   * Documentation from O2Switch: [Base de données MySQL](https://faq.o2switch.fr/hebergement-mutualise/tutoriels-cpanel/base-donnees-mysql)
