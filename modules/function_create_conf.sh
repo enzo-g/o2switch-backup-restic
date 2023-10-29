@@ -1,6 +1,5 @@
 # Function to create/overwrite the Restic configuration file
 function create_restic_conf_file {
-
   # Overwrite the settings in the conf file
   echo '# Set the Restic repository' > "$RESTIC_CONF"
   echo 'restic_repo="sftp:user_remoteserver@host_remoteserver.com:/home/user_remoteserver/restic"' >> "$RESTIC_CONF"
@@ -17,7 +16,11 @@ function create_restic_conf_file {
   echo 'restic_dump_days=15' >> "$RESTIC_CONF"
   echo '# DEFINE RECEIVER EMAIL' >> "$RESTIC_CONF"
   echo 'restic_receive_email="user@example.com"' >> "$RESTIC_CONF"
+  # Add new configuration for enabling/disabling WordPress backups
+  echo '# Enable or Disable automatic backup of all WordPress databases. Set to true to enable, false to disable.' >> "$RESTIC_CONF"
+  echo 'restic_wp_backup_enable=true' >> "$RESTIC_CONF"
 }
+
 
 # Function to create/overwrite the Restic password file
 function create_restic_pwd_file {
