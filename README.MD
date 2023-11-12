@@ -1,7 +1,7 @@
 # O2Switch Backup with Restic
 
 ## Script Description<a name="script-description"></a>
-------------------
+
 This Bash shell script is designed to backup your website's data and databases from [O2Switch's infrastructure](https://www.o2switch.fr/) to a remote cloud service of your choice.
 
 The script can automatically detect WordPress installations located in directories at the root of your installation and dump their databases for backup. It uses Restic and Rclone to backup your data in a secure manner on a remote location. Restic is a powerful and easy-to-use backup tool that features strong encryption, efficient deduplication, and compression to help you securely backup and restore your data. Rclone is a versatile and reliable command-line tool that allows you to sync and transfer files between multiple cloud storage providers and other types of storage systems.
@@ -9,13 +9,13 @@ The script can automatically detect WordPress installations located in directori
 The decision to use this script to backup your data with O2Switch's infrastructure is based on their recommendation for users to maintain their own backups in addition to their [Jetbackup](https://faq.o2switch.fr/hebergement-mutualise/tutoriels-cpanel/sauvegarde-jetbackup) solution for restoring backups. This script is designed to follow their recommendation and provide you with a secure and efficient backup solution.
 
 ## Disclaimer<a name="disclaimer"></a>
-------------------
+
 * I'm not affiliated with [O2Switch](https://www.o2switch.fr/)
 * This script is provided as-is and without any warranty. The author is not responsible for any problems that may arise from the use of this script, including but not limited to data loss, system crashes, or other issues. While this script is intended for backing up data, please note that backups can fail for a variety of reasons, and it is important to backup your data before running the script. Use at your own risk and make sure to backup your data before running the script.
 * If you are uncertain about how to use this script or encounter any issues during its execution, O2Switch offers Jetbackup as a backup solution. For more information on how to use Jetbackup, please visit their [FAQ page](https://faq.o2switch.fr/hebergement-mutualise/tutoriels-cpanel/sauvegarde-jetbackup)
 
 ## Installation
-------------------
+
 Clone the repository and set up the script. 
 
 ```bash
@@ -149,7 +149,7 @@ Once the script is running, you'll be presented with an interactive menu that of
 - For problems with specific snapshots, check their integrity and availability in the Restic repository.
 
 ## HELP
-------------------
+
 Before asking for help, make sure to check the documentation for Restic and Rclone. These resources will be very helpful for you to understand the script:
 - Restic Documentation: [https://restic.readthedocs.io/en/latest/](https://restic.readthedocs.io/en/latest/)
 - Rclone Documentation: [https://rclone.org/docs/](https://rclone.org/docs/)
