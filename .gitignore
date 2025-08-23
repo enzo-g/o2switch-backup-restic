@@ -1,0 +1,43 @@
+# Claude Code configuration
+.claude/
+
+# Temporary files
+*.tmp
+*.temp
+.tmp/
+
+# Log files
+*.log
+logs/
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Configuration files with sensitive data
+**/configs/*.conf
+**/configs/*.pwd
+backup-restic-conf.conf
+backup-restic-pwd.conf
+backup-db-others.conf
+backup-pgdb-others.conf
+backup-excluded-dirs.conf
+
+# Runtime directories
+binaries/

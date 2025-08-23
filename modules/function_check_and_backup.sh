@@ -1,9 +1,9 @@
 # Define function to check and potentially backup existing files
 check_and_backup_existing_files() {
     local BACKUP_NEEDED=0
-    for filepath in "$@"; do
-        if [ -f "$filepath" ]; then
-            echo "[!] Warning: File $filepath already exists."
+    for FILEPATH in "$@"; do
+        if [ -f "$FILEPATH" ]; then
+            echo "[!] Warning: File $FILEPATH already exists."
             BACKUP_NEEDED=1
         fi
     done
@@ -17,7 +17,7 @@ check_and_backup_existing_files() {
 
         if [ "$RESPONSE" = "y" ]; then
             # Determine the backup directory name
-            BACKUP_DIR="$DIR_INSTALLATION_scripts/backup_$(date +"%Y-%m-%d_%H-%M")"
+            local -r BACKUP_DIR="$DIR_INSTALLATION_SCRIPTS/backup_$(date +"%Y-%m-%d_%H-%M")"
             echo "[*] Creating backup directory: $BACKUP_DIR..."
 
             # Copy the current script install to a new backup directory

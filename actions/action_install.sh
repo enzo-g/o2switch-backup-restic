@@ -16,10 +16,10 @@ create_restic_pwd_file
 if [ "$(check_script_location "$DIR_INSTALLATION")" = "false" ]; then
     echo "Copying backup script and associated files to the installation directory..."
     # Get the directory containing the backup.sh script
-    current_script_dir="$(dirname "$(realpath "${BASH_SOURCE[1]}")")"
+    CURRENT_SCRIPT_DIR="$(dirname "$(realpath "${BASH_SOURCE[1]}"))"
     # Ensure the target directory exists
     mkdir -p "$DIR_INSTALLATION"
     # Use rsync to copy all files and folders to the installation directory
-    rsync -av --progress "$current_script_dir/" "$DIR_INSTALLATION/"
+    rsync -av --progress "$CURRENT_SCRIPT_DIR/" "$DIR_INSTALLATION/"
     echo "Files copied to the installation directory."
 fi

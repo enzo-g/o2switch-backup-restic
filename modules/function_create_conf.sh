@@ -2,23 +2,23 @@
 function create_restic_conf_file {
   # Overwrite the settings in the conf file
   echo '# Set the Restic repository' > "$RESTIC_CONF"
-  echo 'restic_repo="sftp:user_remoteserver@host_remoteserver.com:/home/user_remoteserver/restic"' >> "$RESTIC_CONF"
-  echo '#restic_repo="rclone:example:O2switch/R1"' >> "$RESTIC_CONF"
+  echo 'RESTIC_REPO="sftp:user_remoteserver@host_remoteserver.com:/home/user_remoteserver/restic"' >> "$RESTIC_CONF"
+  echo '#RESTIC_REPO="rclone:example:O2switch/R1"' >> "$RESTIC_CONF"
   echo '# Define how many days of backup restic should preserve' >> "$RESTIC_CONF"
-  echo 'restic_keep_days=90d' >> "$RESTIC_CONF"
+  echo 'RESTIC_KEEP_DAYS=90d' >> "$RESTIC_CONF"
   echo '# Define which day of the month, restic should clean the backup repository' >> "$RESTIC_CONF"
-  echo 'restic_clean_day=15' >> "$RESTIC_CONF"
+  echo 'RESTIC_CLEAN_DAY=15' >> "$RESTIC_CONF"
   echo '# Define log file name' >> "$RESTIC_CONF"
-  echo 'restic_log_file=$(date +"%Y-%m-%d-%H-%M")"_backup.txt"' >> "$RESTIC_CONF"
+  echo 'RESTIC_LOG_FILE=$(date +"%Y-%m-%d-%H-%M")"_backup.txt"' >> "$RESTIC_CONF"
   echo '# Define how many days we keep the log files' >> "$RESTIC_CONF"
-  echo 'restic_log_days=90' >> "$RESTIC_CONF"
+  echo 'RESTIC_LOG_DAYS=90' >> "$RESTIC_CONF"
   echo '# Define how many days we keep the MySQL dump' >> "$RESTIC_CONF"
-  echo 'restic_dump_days=15' >> "$RESTIC_CONF"
+  echo 'RESTIC_DUMP_DAYS=15' >> "$RESTIC_CONF"
   echo '# DEFINE RECEIVER EMAIL' >> "$RESTIC_CONF"
-  echo 'restic_receive_email="user@example.com"' >> "$RESTIC_CONF"
+  echo 'RESTIC_RECEIVE_EMAIL="user@example.com"' >> "$RESTIC_CONF"
   # Add new configuration for enabling/disabling WordPress backups
   echo '# Enable or Disable automatic backup of all WordPress databases. Set to true to enable, false to disable.' >> "$RESTIC_CONF"
-  echo 'restic_wp_backup_enable=true' >> "$RESTIC_CONF"
+  echo 'RESTIC_WP_BACKUP_ENABLE=true' >> "$RESTIC_CONF"
 }
 
 

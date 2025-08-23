@@ -1,7 +1,7 @@
 function check_script_location() {
-  local expected_dir="$1"
+  local -r EXPECTED_DIR="$1"
   # The directory of the parent script (backup.sh) will be in the calling context's $0
-  if [ "$(dirname "$(realpath "${BASH_SOURCE[1]}")")" = "$expected_dir" ]; then
+  if [ "$(dirname "$(realpath "${BASH_SOURCE[1]}")")" = "$EXPECTED_DIR" ]; then
     echo true
   else
     echo false

@@ -2,15 +2,15 @@
 # For each directory, it checks if it exists. If it does, it informs the user.
 # Otherwise, it attempts to create the directory.
 create_directories() {
-    for dir in "$@"; do
-        if [ -d "$dir" ]; then
-            echo "Directory $dir already exists."
+    for DIR in "$@"; do
+        if [ -d "$DIR" ]; then
+            echo "Directory $DIR already exists."
         else
-            mkdir -p "$dir"
+            mkdir -p "$DIR"
             if [ $? -eq 0 ]; then
-                echo "Directory $dir created successfully."
+                echo "Directory $DIR created successfully."
             else
-                echo "Failed to create directory $dir."
+                echo "Failed to create directory $DIR."
             fi
         fi
     done

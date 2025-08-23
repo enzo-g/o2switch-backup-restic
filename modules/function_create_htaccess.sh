@@ -1,12 +1,12 @@
 # Define function to create .htaccess file if it doesn't exist, overwrite it if the content is not correct.
 function create_htaccess_file() {
   # Desired content for the .htaccess file
-  DESIRED_CONTENT="deny from all"
+  local -r DESIRED_CONTENT="deny from all"
 
   # Iterate over each directory passed as argument
-  for dir in "$@"; do
+  for DIR in "$@"; do
     # Define the path to the .htaccess file
-    HTACCESS_FILE="$dir/.htaccess"
+    local HTACCESS_FILE="$DIR/.htaccess"
 
     if [ -f "$HTACCESS_FILE" ]; then
       # If the file exists, check if its content matches the desired content

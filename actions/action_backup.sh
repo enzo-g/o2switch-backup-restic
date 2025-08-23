@@ -13,11 +13,12 @@ else
 fi
 
 # Create a temporary file to store the script output
-temp_log=$(mktemp)
+TEMP_LOG=$(mktemp)
 
 # Redirect stdout and stderr to tee, which will log to the temporary file and the console
 (
-echo "Backup script is now starting -  $my_date"
+MY_DATE=$(date)
+echo "Backup script is now starting -  $MY_DATE"
 
 # Call the check_script_location function
 echo "Check script location:"
@@ -42,7 +43,7 @@ create_htaccess_file "$DIR_INSTALLATION" "$DIR_DB_BACKUP"
 source "$RESTIC_CONF"
 
 # Check if WordPress automatic backup is enabled
-if [ "$restic_wp_backup_enable" == "true" ]; then
+if [ "$RESTIC_WP_BACKUP_ENABLE" == "true" ]; then
 	# Dump WP DB 
 	dump_wordpress_databases --root-dir=$DIR_WP --backup-dir=$DIR_DB_BACKUP
 else
@@ -56,54 +57,55 @@ dump_postgresql_dbs $OTHER_PGDBS_FILE
 
 # Import the list of excluded directories to not backup.
 echo "Search for folders and files to exclude from backup."
-while read -r line; do
-  if [[ "$line" != \#* ]]; then
-    exclude_flags+=" --exclude $line"
+EXCLUDE_FLAGS=""
+while read -r LINE; do
+  if [[ "$LINE" != \#* ]]; then
+    EXCLUDE_FLAGS+=" --exclude $LINE"
   fi
 done < "$EXCLUDED_DIRS_FILE"
 
 # Restic will backup all directories located in $DIR_ROOT except the one listed for exclusion.
 echo "Start to backup your data to your restic repo."
 
-restic backup $DIR_ROOT --repo $restic_repo -p $RESTIC_PWD_FILE $exclude_flags
+restic backup $DIR_ROOT --repo $RESTIC_REPO -p $RESTIC_PWD_FILE $EXCLUDE_FLAGS
 RESTIC_EXIT=$?
 echo $RESTIC_EXIT > /tmp/restic_exit.tmp
 
 # On the 15th of the month we clean snapshot older than 3 months and we prune the repo
-if [ "$(date +%d)" -eq $restic_clean_day ]; then
-  echo "Removing restic snapshot older than $restic_keep_days days: "
-  restic forget --keep-within-daily $restic_keep_days --repo $restic_repo -p $RESTIC_PWD_FILE
+if [ "$(date +%d)" -eq $RESTIC_CLEAN_DAY ]; then
+  echo "Removing restic snapshot older than $RESTIC_KEEP_DAYS days: "
+  restic forget --keep-within-daily $RESTIC_KEEP_DAYS --repo $RESTIC_REPO -p $RESTIC_PWD_FILE
   # Prune the repository
-  restic prune --repo $restic_repo -p $RESTIC_PWD_FILE
+  restic prune --repo $RESTIC_REPO -p $RESTIC_PWD_FILE
 fi
 #Cleanup old log files
-delete_old_logs "$DIR_SCRIPT_LOGS" "$restic_log_days"
+delete_old_logs "$DIR_SCRIPT_LOGS" "$RESTIC_LOG_DAYS"
 # Clean up old database backup files within the folder $DIR_DB_BACKUP
-delete_old_dumps "$DIR_DB_BACKUP" "$restic_dump_days"
-echo "Log file: $DIR_SCRIPT_LOGS/$restic_log_file"
+delete_old_dumps "$DIR_DB_BACKUP" "$RESTIC_DUMP_DAYS"
+echo "Log file: $DIR_SCRIPT_LOGS/$RESTIC_LOG_FILE"
 echo "Sending the log file by email."
 
-) 2>&1 | tee -a "$DIR_SCRIPT_LOGS/$restic_log_file"
+) 2>&1 | tee -a "$DIR_SCRIPT_LOGS/$RESTIC_LOG_FILE"
 # Read the exit status from the temporary file
 read RESTIC_EXIT < /tmp/restic_exit.tmp
 rm /tmp/restic_exit.tmp  # Clean up the temporary file
 case $RESTIC_EXIT in
   0)
-	RESTIC_EXIT_SBJ="O2Switch backup succeed: $restic_log_file"
+	RESTIC_EXIT_SBJ="O2Switch backup succeed: $RESTIC_LOG_FILE"
 	RESTIC_EXIT_MSG="Hi! Restic snapshot created successfully!"
 	;;
   1)
-	RESTIC_EXIT_SBJ="O2Switch backup failed: $restic_log_file"
+	RESTIC_EXIT_SBJ="O2Switch backup failed: $RESTIC_LOG_FILE"
 	RESTIC_EXIT_MSG="Hi! Fatal error: no snapshot created"
 	;;
   3)
-	RESTIC_EXIT_SBJ="O2Switch backup incomplete: $restic_log_file"
+	RESTIC_EXIT_SBJ="O2Switch backup incomplete: $RESTIC_LOG_FILE"
 	RESTIC_EXIT_MSG="Hi! Incomplete snapshot created: some source data could not be read"
 	;;
   *)
-	RESTIC_EXIT_SBJ="O2Switch backup error: $restic_log_file"
+	RESTIC_EXIT_SBJ="O2Switch backup error: $RESTIC_LOG_FILE"
 	RESTIC_EXIT_MSG="Hi! Unknown error occurred"
 	;;
 esac
 
-echo $RESTIC_EXIT_MSG | mailx -s "$RESTIC_EXIT_SBJ" -a "$DIR_SCRIPT_LOGS/$restic_log_file" $restic_receive_email
+echo $RESTIC_EXIT_MSG | mailx -s "$RESTIC_EXIT_SBJ" -a "$DIR_SCRIPT_LOGS/$RESTIC_LOG_FILE" $RESTIC_RECEIVE_EMAIL

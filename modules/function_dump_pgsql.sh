@@ -1,5 +1,5 @@
 dump_postgresql_dbs() {
-  local FILE="$1"
+  local -r FILE="$1"
   local NUM_DBS=0
 
   echo "Search if specific PostGreSQL DB has been listed for backup:"
@@ -15,13 +15,13 @@ dump_postgresql_dbs() {
         continue
       fi
 
-      DB_NAME=$(echo "$LINE" | cut -d ";" -f 1)
-      DB_USER=$(echo "$LINE" | cut -d ";" -f 2)
-      DB_PASSWORD=$(echo "$LINE" | cut -d ";" -f 3)
+      local DB_NAME=$(echo "$LINE" | cut -d ";" -f 1)
+      local DB_USER=$(echo "$LINE" | cut -d ";" -f 2)
+      local DB_PASSWORD=$(echo "$LINE" | cut -d ";" -f 3)
 
-      DATE=$(date +"%Y-%m-%d")
-      TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
-      DUMP_FILE="${DB_NAME}_${DATE}_${TIMESTAMP}.sql"
+      local DATE=$(date +"%Y-%m-%d")
+      local TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+      local DUMP_FILE="${DB_NAME}_${DATE}_${TIMESTAMP}.sql"
       if PGPASSWORD="$DB_PASSWORD" pg_dump --username="$DB_USER" --file="$DIR_DB_BACKUP/$DUMP_FILE" --format=custom "$DB_NAME"; then
         echo "[✓] Dump succeed for: $DB_NAME"
         gzip "$DIR_DB_BACKUP/$DUMP_FILE"

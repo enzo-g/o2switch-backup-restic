@@ -1,5 +1,5 @@
 dump_mysql_dbs() {
-  local FILE="$1"
+  local -r FILE="$1"
   local NUM_DBS=0
 
   echo "Search if specific DB has been listed for backup:"
@@ -13,12 +13,12 @@ dump_mysql_dbs() {
         # Skip commented lines
         continue
       fi
-      DB_NAME=$(echo "$LINE" | cut -d ";" -f 1)
-      DB_USER=$(echo "$LINE" | cut -d ";" -f 2)
-      DB_PASSWORD=$(echo "$LINE" | cut -d ";" -f 3)
-      DATE=$(date +"%Y-%m-%d")
-      TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
-      DUMP_FILE="${DB_NAME}_${DATE}_${TIMESTAMP}.sql"
+      local DB_NAME=$(echo "$LINE" | cut -d ";" -f 1)
+      local DB_USER=$(echo "$LINE" | cut -d ";" -f 2)
+      local DB_PASSWORD=$(echo "$LINE" | cut -d ";" -f 3)
+      local DATE=$(date +"%Y-%m-%d")
+      local TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+      local DUMP_FILE="${DB_NAME}_${DATE}_${TIMESTAMP}.sql"
       if mysqldump --user=$DB_USER --password=$DB_PASSWORD --databases $DB_NAME > "$DIR_DB_BACKUP/$DUMP_FILE"; then
         echo "[✓] Dump succeed for: $DB_NAME"
         gzip "$DIR_DB_BACKUP/$DUMP_FILE"
