@@ -54,12 +54,22 @@ function dump_wordpress_databases() {
         local DATE=$(date +"%Y-%m-%d")
         local TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
         local DUMP_FILE="${DATABASE}_${DATE}_${TIMESTAMP}.sql"
-        if mysqldump --user="$DB_USER" --password="$DB_PASSWORD" --databases "$DATABASE" > "$BACKUP_DIR/$DUMP_FILE"; then
+        # Create temporary MySQL config file with credentials
+        local MYSQL_CONFIG=$(mktemp)
+        echo "[client]" > "$MYSQL_CONFIG"
+        echo "user=$DB_USER" >> "$MYSQL_CONFIG"
+        echo "password=$DB_PASSWORD" >> "$MYSQL_CONFIG"
+        chmod 600 "$MYSQL_CONFIG"
+        
+        if mysqldump --defaults-file="$MYSQL_CONFIG" --databases "$DATABASE" > "$BACKUP_DIR/$DUMP_FILE"; then
           gzip "$BACKUP_DIR/$DUMP_FILE"
           echo "[✓] Dump succeed for: $INSTALLATION_DIR"
         else
           echo "[X] Dump failed for: $INSTALLATION_DIR"
         fi
+        
+        # Clean up temporary config file
+        rm -f "$MYSQL_CONFIG"
       fi
     fi
   done

@@ -67,16 +67,16 @@ done < "$EXCLUDED_DIRS_FILE"
 # Restic will backup all directories located in $DIR_ROOT except the one listed for exclusion.
 echo "Start to backup your data to your restic repo."
 
-restic backup $DIR_ROOT --repo $RESTIC_REPO -p $RESTIC_PWD_FILE $EXCLUDE_FLAGS
+restic backup "$DIR_ROOT" --repo "$RESTIC_REPO" -p "$RESTIC_PWD_FILE" $EXCLUDE_FLAGS
 RESTIC_EXIT=$?
 echo $RESTIC_EXIT > /tmp/restic_exit.tmp
 
 # On the 15th of the month we clean snapshot older than 3 months and we prune the repo
 if [ "$(date +%d)" -eq $RESTIC_CLEAN_DAY ]; then
   echo "Removing restic snapshot older than $RESTIC_KEEP_DAYS days: "
-  restic forget --keep-within-daily $RESTIC_KEEP_DAYS --repo $RESTIC_REPO -p $RESTIC_PWD_FILE
+  restic forget --keep-within-daily "$RESTIC_KEEP_DAYS" --repo "$RESTIC_REPO" -p "$RESTIC_PWD_FILE"
   # Prune the repository
-  restic prune --repo $RESTIC_REPO -p $RESTIC_PWD_FILE
+  restic prune --repo "$RESTIC_REPO" -p "$RESTIC_PWD_FILE"
 fi
 #Cleanup old log files
 delete_old_logs "$DIR_SCRIPT_LOGS" "$RESTIC_LOG_DAYS"
@@ -108,4 +108,4 @@ case $RESTIC_EXIT in
 	;;
 esac
 
-echo $RESTIC_EXIT_MSG | mailx -s "$RESTIC_EXIT_SBJ" -a "$DIR_SCRIPT_LOGS/$RESTIC_LOG_FILE" $RESTIC_RECEIVE_EMAIL
+echo "$RESTIC_EXIT_MSG" | mailx -s "$RESTIC_EXIT_SBJ" -a "$DIR_SCRIPT_LOGS/$RESTIC_LOG_FILE" "$RESTIC_RECEIVE_EMAIL"

@@ -27,6 +27,8 @@ function create_restic_pwd_file {
 
   # Overwrite the password file with the default placeholder
   echo "INPUT_YOUR_RESTIC_REPO_PASSWORD_HERE" > "$RESTIC_PWD_FILE"
+  # Set secure permissions for the password file
+  chmod 600 "$RESTIC_PWD_FILE"
   echo "Restic password file created at $RESTIC_PWD_FILE. Edit it before launching the backup script again."
 }
 
@@ -39,6 +41,8 @@ function create_db_others_file() {
     echo "# Example:" >> "$OTHER_DBS_FILE"
     echo "# mydb1;myuser1;mypassword1" >> "$OTHER_DBS_FILE"
     echo "# mydb2;myuser2;mypassword2" >> "$OTHER_DBS_FILE"
+    # Set secure permissions for the database config file
+    chmod 600 "$OTHER_DBS_FILE"
   fi
 } 
 
@@ -50,6 +54,8 @@ function create_pgdb_others_file() {
     echo "# Example:" >> "$OTHER_PGDBS_FILE"
     echo "# mydb1;myuser1;mypassword1" >> "$OTHER_PGDBS_FILE"
     echo "# mydb2;myuser2;mypassword2" >> "$OTHER_PGDBS_FILE"
+    # Set secure permissions for the PostgreSQL database config file
+    chmod 600 "$OTHER_PGDBS_FILE"
   fi
 }
 
